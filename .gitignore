@@ -1,0 +1,24 @@
+# Build output
+build/
+.gradle/
+.kotlin/
+.cxx/
+*.apk
+*.aab
+local.properties
+captures/
+.idea/
+*.iml
+.DS_Store
+Thumbs.db
+
+# Secrets: release signing key and any YouTube API key. NEVER commit these.
+signing/*
+!signing/README.md
+*.jks
+*.keystore
+youtube.properties
+
+# Host test data (made by player/hosttest/make-data.sh)
+player/hosttest/data/
+player/hosttest/build/

@@ -1,0 +1,19 @@
+# Keep Unix line endings where Linux needs them (CI builds run on Linux), Windows ones for .bat.
+* text=auto
+gradlew text eol=lf
+*.sh text eol=lf
+*.bat text eol=crlf
+*.jar binary
+*.png binary
+*.jpg binary
+*.flac binary
+*.wav binary
+*.aiff binary
+*.m4a binary
+*.mp3 binary
+*.ogg binary
+*.opus binary
+*.dsf binary
+*.dff binary
+*.cue -text
+player/src/test/resources/** -text

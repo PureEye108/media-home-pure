@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Media Home's languages (Android 13+ also lists them in Settings > Apps > Media Home > Language). -->
+<locale-config xmlns:android="http://schemas.android.com/apk/res/android">
+    <locale android:name="en" />
+    <locale android:name="vi" />
+    <locale android:name="es" />
+    <locale android:name="zh-CN" />
+    <locale android:name="hi" />
+    <locale android:name="fr" />
+    <locale android:name="de" />
+    <locale android:name="ja" />
+    <locale android:name="ko" />
+    <locale android:name="pt-BR" />
+    <locale android:name="ru" />
+</locale-config>

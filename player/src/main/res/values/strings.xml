@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="pp_app_name">Player Pure</string>
+    <string name="pp_perm_control">Control Player Pure</string>
+    <string name="pp_channel_playback">Playback</string>
+</resources>

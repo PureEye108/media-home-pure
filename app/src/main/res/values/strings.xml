@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name" translatable="false">Media Home Pure</string>
+
+    <!-- Tiles -->
+    <string name="tile_music">Music</string>
+    <string name="tile_video">Video</string>
+    <string name="tile_youtube">YouTube</string>
+    <string name="tile_network">Network Library</string>
+    <string name="tile_browser">Browser</string>
+    <string name="tile_all_apps">All apps</string>
+    <string name="tile_settings">Settings</string>
+
+    <string name="opens_in">Opens in %1$s</string>
+    <string name="not_installed">Needs %1$s - tap to get it</string>
+    <string name="choose_open_which">Open which library?</string>
+    <string name="choose_none_installed">%1$s - tap to get one</string>
+    <string name="or_join">" or "</string>
+    <string name="get_app">Get %1$s</string>
+    <string name="network_get_message">Choose a media-server app to install from Google Play.\n\nJellyfin: free.\nEmby: free to install; playback needs Emby\'s one-time unlock or Emby Premiere.</string>
+    <string name="media_prev">Previous track</string>
+    <string name="media_play_pause">Play or pause</string>
+    <string name="media_next">Next track</string>
+    <string name="row_all_apps_sub">Open any app on this tablet</string>
+    <string name="hint_long_press">Tip: press and hold a tile to choose which app it opens.</string>
+
+    <!-- Dialogs -->
+    <string name="need_app">This tile needs an app that is not installed yet. Suggested: %1$s.\n\nOpen Google Play to install it?</string>
+    <string name="open_play">Open Google Play</string>
+    <string name="automatic_choice">Automatic (best installed app)</string>
+    <string name="choose_app_for">App for the %1$s tile</string>
+    <string name="choose_tile">Which tile?</string>
+    <string name="could_not_open">Could not open this page on this tablet.</string>
+
+    <!-- Common page -->
+    <string name="back">Back</string>
+    <string name="on">On</string>
+    <string name="off">Off</string>
+
+    <!-- Settings page -->
+    <string name="section_home">Media Home</string>
+    <string name="set_tile_apps">Choose the app for each tile</string>
+    <string name="set_tile_apps_sub">For example: Music opens Player Pure, YouTube opens in Brave</string>
+    <string name="set_keep_on">Keep the screen on while Media Home is showing</string>
+    <string name="set_immersive">Full screen</string>
+    <string name="set_immersive_sub">Hide the status and navigation bars (swipe from the edge to show them)</string>
+    <string name="section_android">Tablet settings</string>
+    <string name="set_sound">Sound and audio output</string>
+    <string name="set_sound_sub">Volume and output device</string>
+    <string name="set_wifi">Wi-Fi</string>
+    <string name="set_wifi_sub">Network for streaming and your media server</string>
+    <string name="set_bt">Bluetooth</string>
+    <string name="set_bt_sub">Headphones and speakers (lossy - use USB or HDMI for lossless)</string>
+    <string name="set_display">Display</string>
+    <string name="set_display_sub">Brightness, screen timeout</string>
+    <string name="set_all">All Android settings</string>
+    <string name="set_all_sub">The full Android settings app</string>
+    <string name="section_exit">Leave Media Home</string>
+    <string name="set_switch_home">Switch back to the standard home screen</string>
+    <string name="set_switch_home_sub">Choose your usual home app here. Media Home stays installed and can be chosen again.</string>
+    <string name="section_about">About this tablet</string>
+
+
+    <!-- USB DAC / bit-perfect -->
+    <string name="section_dac">USB DAC (bit-perfect)</string>
+    <string name="dac_connected">USB DAC connected: %1$s</string>
+    <string name="dac_none">No USB DAC connected</string>
+    <string name="dac_steps">Android usually mixes and resamples USB audio itself, so bit-perfect playback needs a player with its own USB driver.\n\nPlayer Pure (the Music tile): connect the DAC, let Android open Player Pure for it and tick \"Always\". Player Pure › Settings shows the DAC, and Now Playing says \"Bit-perfect\". Leave Digital volume off and set the level on the DAC or amplifier.\n\nHiBy Music also works: let HiBy use the DAC, then turn on exclusive USB output in its settings, with EQ, MSEB and effects off.\n\nCheck: the DAC\'s sample-rate display should follow each track (44.1 kHz, 96 kHz and so on). Only one app can hold the DAC at a time.</string>
+    <string name="dac_open_pp">Open Player Pure</string>
+    <string name="dac_open_pp_sub">Settings and DAC test are in Player Pure \u203a Settings</string>
+    <string name="dac_open_hiby">Open HiBy Music</string>
+    <string name="dac_open_hiby_sub">To switch on its exclusive USB output</string>
+
+    <!-- Web remote -->
+    <string name="section_remote">Web remote</string>
+    <string name="remote_toggle">Web remote</string>
+    <string name="remote_toggle_sub">Control music, video and apps from a phone or PC browser on the same Wi-Fi</string>
+    <string name="remote_open_this">Open this address in a browser on the same Wi-Fi:</string>
+    <string name="remote_pin_line">PIN: %1$s</string>
+    <string name="remote_error">Could not start: %1$s</string>
+    <string name="remote_access_title">Notification access (see what is playing)</string>
+    <string name="remote_access_needed">Not granted - needed to show and control what is playing</string>
+    <string name="remote_launch_title">Display over other apps (open apps from the remote)</string>
+    <string name="remote_launch_needed">Not granted - needed to open apps from the remote</string>
+    <string name="perm_granted">Granted</string>
+    <string name="input_service_label">Media Home remote mouse &amp; keyboard</string>
+    <string name="input_service_summary">Lets the Media Home web remote move a pointer, tap, scroll and type</string>
+    <string name="input_service_description">Lets the Media Home web remote (PIN-protected, home Wi-Fi only) use your phone as a touchpad and keyboard: it moves an on-screen pointer, taps, scrolls, goes Back or Home, and types into the text field you selected. It acts only on commands from the remote and does not collect or send anything.</string>
+    <string name="remote_input_title">Mouse and keyboard from the phone</string>
+    <string name="yt_key_title">YouTube key (for "Play first video")</string>
+    <string name="yt_key_set">Set (ends in %1$s) - tap to change or remove</string>
+    <string name="yt_key_builtin">Built in (ends in %1$s) - Play first video and Search &amp; pick work as they are. Tap to use a different key</string>
+    <string name="yt_key_none">Not set - needed for YouTube search from the web remote (free; tap for how to get one)</string>
+    <string name="yt_key_hint">Paste the key (starts with AIza)</string>
+    <string name="yt_key_bad">That is not a YouTube API key (it starts with AIza and has 39 characters)</string>
+    <string name="yt_key_remove">Remove</string>
+    <string name="save">Save</string>
+    <string name="remote_files_title">Files from the phone (All files access)</string>
+    <string name="remote_files_needed">Not granted - needed for the web remote\'s Files tab (browse, upload, play, rename, delete)</string>
+    <string name="remote_input_needed">Off - tap to turn on \"Media Home remote mouse &amp; keyboard\" in Accessibility</string>
+    <string name="remote_channel">Web remote</string>
+    <string name="remote_on_title">Media Home web remote is on</string>
+    <string name="remote_no_network">No Wi-Fi address yet</string>
+    <string name="remote_qr_pill">Remote</string>
+    <string name="remote_qr_title">Scan to open the remote</string>
+    <string name="remote_qr_sub">Point a phone camera at this code. It opens the web remote and signs in with the PIN automatically.</string>
+    <string name="remote_qr_note">Anyone who scans it can control the tablet while on your Wi-Fi.</string>
+    <string name="qr_tile_title">Remote</string>
+    <string name="qr_tile_sub">Scan with a phone camera to control the tablet.</string>
+    <string name="qr_tile_where">%1$s · PIN %2$s</string>
+    <string name="qr_tile_desc">Web remote. Scan this code with a phone camera, or open %1$s with PIN %2$s. Tap for a bigger code.</string>
+    <string name="set_remote_qr_home">QR code on the home screen</string>
+    <string name="set_remote_qr_home_sub">Shows the remote\'s code in the Browser tile while no phone or PC has the remote open. The Browser tile comes back as soon as one connects, and the code returns about 15 seconds after the last one closes the remote or locks.</string>
+    <string name="close">Close</string>
+
+    <!-- Set-up checklist (public edition) -->
+    <string name="setup_title">Set up</string>
+    <string name="setup_row">Set up</string>
+    <string name="setup_row_sub">Permissions and options, step by step: home screen, music, remote, screen saver</string>
+    <string name="setup_intro">Welcome to Media Home Pure. Each step below is optional: tap it, allow it on Android\'s page, then come back with Back. You can open this list again any time from Settings › Set up.</string>
+    <string name="setup_section_basics">Home screen, music and weather</string>
+    <string name="setup_section_help">Help</string>
+    <string name="setup_done">Done</string>
+    <string name="setup_todo">Not yet - tap to set up</string>
+    <string name="setup_optional">Optional - tap to add your key</string>
+    <string name="setup_unknown">Android doesn\'t say - tap to check</string>
+    <string name="setup_home_title">Use as the home screen</string>
+    <string name="setup_home_why">Media Home Pure opens when you press Home. To go back to your usual home screen: Settings › Switch back to the standard home screen.</string>
+    <string name="setup_notif_title">Notifications</string>
+    <string name="setup_notif_why">Lets the music player and the web remote keep running in the background, with a notification you can see.</string>
+    <string name="setup_files_title">Music and files (All files access)</string>
+    <string name="setup_files_why">Player Pure finds the music on this device and on USB drives. The web remote\'s Files tab can browse, upload, rename and delete.</string>
+    <string name="setup_playing_title">See what is playing (Notification access)</string>
+    <string name="setup_playing_why">The home screen, the screen saver and the web remote show and control the music from any app.</string>
+    <string name="setup_restricted">Switch greyed out? Android blocks it for apps installed from a file: open App info (below) › ⋮ › Allow restricted settings, then try again.</string>
+    <string name="setup_location_title">Weather where you are (approximate location)</string>
+    <string name="setup_location_why">Rounded to about 1 km. Without it, the weather uses a city you choose in Settings › Weather.</string>
+    <string name="setup_location_off">Allowed, but Location is off - tap to turn it on</string>
+    <string name="setup_remote_why">Control music, video and apps from a phone or computer browser on the same Wi-Fi. Protected by a PIN.</string>
+    <string name="pin_title">Web remote PIN</string>
+    <string name="pin_now">PIN: %1$s - tap to change</string>
+    <string name="pin_message">4 to 8 digits. Phones signed in with the old PIN have to sign in again.</string>
+    <string name="pin_hint">4 to 8 digits</string>
+    <string name="pin_bad">The PIN must be 4 to 8 digits</string>
+    <string name="pin_changed">New PIN saved</string>
+    <string name="setup_overlay_why">Lets the web remote open apps while another app is on the screen.</string>
+    <string name="setup_input_why">Use the phone as a touchpad and keyboard. In Accessibility, turn on \"Media Home remote mouse &amp; keyboard\".</string>
+    <string name="setup_youtube_title">YouTube search from the web remote</string>
+    <string name="setup_youtube_why">Needs your own free YouTube Data API key (about 5 minutes, once). YouTube itself works without it.</string>
+    <string name="setup_saver_title">Screen saver: clock, weather and music</string>
+    <string name="setup_saver_why">In Android\'s screen saver settings choose Media Home clock and \"While charging\". It starts only while the device is charging.</string>
+    <string name="setup_timeout_title">Screen saver timer (Modify system settings)</string>
+    <string name="setup_timeout_why">Lets Settings › Screen saver › Start after change Android\'s screen timeout.</string>
+    <string name="setup_stay_awake_title">Turn off \"Stay awake while charging\"</string>
+    <string name="setup_app_info">App info</string>
+    <string name="setup_app_info_sub">Android\'s page for this app: permissions, and ⋮ › Allow restricted settings</string>
+    <string name="setup_manual">Manual</string>
+    <string name="setup_manual_sub">Step-by-step help in English and Vietnamese (opens a web page)</string>
+    <string name="setup_finish">Finish</string>
+    <string name="setup_finish_sub">Go to the home screen. Anything left can be done later.</string>
+    <string name="yt_key_restrict">Paste your own key below. To protect it, restrict it in Google Cloud Console: Android apps, package name %1$s, SHA-1 %2$s; API restriction: YouTube Data API v3.</string>
+    <string name="yt_key_howto">How to get a key</string>
+
+    <!-- Weather -->
+    <plurals name="minutes">
+        <item quantity="one">%d minute</item>
+        <item quantity="other">%d minutes</item>
+    </plurals>
+    <string name="section_language">Language</string>
+    <string name="lang_title">Language</string>
+    <string name="lang_system">Tablet language (%1$s)</string>
+    <string name="files_root_tablet">Tablet</string>
+    <string name="files_root_usb">USB drive</string>
+    <string name="info_device">Device: %1$s</string>
+    <string name="info_build">Build: %1$s</string>
+    <string name="info_patch">Security patch: %1$s</string>
+    <string name="section_saver">Screen saver</string>
+    <string name="saver_name">Media Home clock</string>
+    <string name="saver_playing">Playing %1$s by %2$s</string>
+    <string name="saver_on">On: after %1$d min without use, the tablet shows the clock, the weather and the music that is playing instead of turning the screen off.</string>
+    <string name="saver_off">Off: Android\'s screen saver is not set to Media Home. Tap \"Android screen saver settings\" below, choose Media Home clock and \"While charging\".</string>
+    <string name="saver_unknown">Android doesn\'t say which screen saver is chosen. If it is Media Home clock, it starts after %1$d min without use.</string>
+    <string name="saver_rules">It starts only while the tablet is plugged in (Android\'s rule); on battery the screen turns off as usual. Touch the screen to go back to what was open.</string>
+    <string name="saver_stay_awake">\"Stay awake while charging\" is on (in Developer options), so the screen never times out and the screen saver can\'t start. Turn it off there.</string>
+    <string name="saver_keep_on">\"Keep the screen on\" (above) keeps the screen on while the home screen is showing, so the screen saver starts only from other apps.</string>
+    <string name="saver_preview">Preview</string>
+    <string name="saver_preview_sub">Shows the screen saver now. Touch to close.</string>
+    <string name="saver_start_after">Start after</string>
+    <string name="saver_start_after_sub">%1$d min without use (Android\'s screen timeout)</string>
+    <string name="saver_need_write">Allow Media Home to \"Modify system settings\" first, then try again.</string>
+    <string name="saver_show_music">Show the music that is playing</string>
+    <string name="saver_show_weather">Show the weather</string>
+    <string name="saver_android">Android screen saver settings</string>
+    <string name="saver_android_sub">Choose Media Home clock and \"While charging\"</string>
+    <string name="section_weather">Weather</string>
+    <string name="wx_toggle">Show weather on the home screen</string>
+    <string name="wx_city">City</string>
+    <string name="wx_city_auto">Automatic: %1$s (from the tablet\'s time zone) - tap to choose a city</string>
+    <string name="wx_here_title">Location</string>
+    <string name="wx_here_now">Current location: %1$s. Follows the tablet when it moves.</string>
+    <string name="wx_here_need_permission">Current location - tap to allow approximate location. Until then: %1$s</string>
+    <string name="wx_here_location_off">Current location - Location is off on the tablet (tap to open its settings). Until then: %1$s</string>
+    <string name="wx_here_searching">Current location - looking for it\u2026 Until then: %1$s</string>
+    <string name="wx_here_unnamed">Current location</string>
+    <string name="wx_use_city">Use a fixed city instead</string>
+    <string name="wx_use_city_sub">Search for a city; the weather then stays on that city</string>
+    <string name="wx_use_city_sub_saved">Search for a city (last chosen: %1$s)</string>
+    <string name="wx_use_here">Use the current location</string>
+    <string name="wx_use_here_sub">Weather for wherever the tablet is (approximate location, the default)</string>
+    <string name="wx_privacy">Location is approximate and rounded to about 1 km. Only the rounded coordinates go to Open-Meteo for the forecast; the place name comes from Android\'s own geocoder.</string>
+    <string name="wx_city_hint">City name, e.g. Hanoi</string>
+    <string name="wx_search">Search</string>
+    <string name="wx_pick">Choose your city</string>
+    <string name="wx_search_failed">Could not search - check the internet connection</string>
+    <string name="wx_no_match">No city found with that name</string>
+    <string name="wx_attribution">Weather data by Open-Meteo.com (free, no account). Updates every 30 minutes.</string>
+    <string name="wx_loading">Weather loading\u2026</string>
+    <string name="wx_clear">Clear</string>
+    <string name="wx_mostly_clear">Mostly clear</string>
+    <string name="wx_partly_cloudy">Partly cloudy</string>
+    <string name="wx_overcast">Overcast</string>
+    <string name="wx_fog">Fog</string>
+    <string name="wx_drizzle">Drizzle</string>
+    <string name="wx_rain">Rain</string>
+    <string name="wx_snow">Snow</string>
+    <string name="wx_showers">Rain showers</string>
+    <string name="wx_snow_showers">Snow showers</string>
+    <string name="wx_storm">Thunderstorm</string>
+    <string name="wx_unknown">Weather</string>
+</resources>

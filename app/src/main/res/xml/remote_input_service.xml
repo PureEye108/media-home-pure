@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Media Home "remote mouse & keyboard": gestures (tap, scroll, long press), global back/home, and typing into the focused field.
+     No events are processed; the service acts only on PIN-checked commands from the web remote. -->
+<accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
+    android:description="@string/input_service_description"
+    android:summary="@string/input_service_summary"
+    android:accessibilityEventTypes="typeAnnouncement|typeWindowStateChanged"
+    android:accessibilityFeedbackType="feedbackGeneric"
+    android:accessibilityFlags="flagDefault"
+    android:canPerformGestures="true"
+    android:canRetrieveWindowContent="true"
+    android:notificationTimeout="1000" />

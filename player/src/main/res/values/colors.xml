@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="pp_bg">#FF0B0C10</color>
+    <color name="pp_accent">#FFE9D7B0</color>
+    <color name="pp_icon_bg">#FF121318</color>
+</resources>

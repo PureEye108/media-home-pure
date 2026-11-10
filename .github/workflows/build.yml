@@ -1,0 +1,50 @@
+# Builds and tests every push and pull request. The debug APK, screen renders and lint report are attached to the run.
+name: Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Android NDK and CMake
+        run: yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --install "platforms;android-34" "ndk;27.0.12077973" "cmake;3.22.1" > /dev/null
+
+      - name: Make gradlew executable (in case the repo was uploaded from Windows)
+        run: chmod +x gradlew
+
+      - uses: gradle/actions/setup-gradle@v4   # also checks that gradle-wrapper.jar is the official one
+
+      - name: Tests, lint and debug APK
+        run: ./gradlew --no-daemon test lint assembleDebug
+
+      - name: Native decoder tests (host)
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg > /dev/null
+          sh player/hosttest/make-data.sh && sh player/hosttest/run.sh
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: media-home-pure-debug
+          path: |
+            app/build/outputs/apk/debug/*.apk
+            app/build/screens/
+            player/build/screens/
+            app/build/reports/lint-results-*.html
+          retention-days: 14

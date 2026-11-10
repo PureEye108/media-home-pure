@@ -1,0 +1,1148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<title>Media Home Remote</title>
+<!-- The tablet puts the chosen language's words here (Media Home > Settings > Language); empty = English. -->
+<script type="application/json" id="i18n">{}</script>
+<style>
+  :root {
+    --bg: #0b0c10; --card: #171920; --card2: #1f222b; --line: #2e323d; --text: #f4f5f7; --dim: #b4b9c4;
+    --accent: #e8e1ff; --focus: #ffffff; --radius: 22px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--text);
+    font: 16px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  body { padding: 16px; padding-bottom: max(16px, env(safe-area-inset-bottom)); }
+  .wrap { max-width: 1100px; margin: 0 auto; }
+  header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 4px 2px 16px; }
+  header h1 { font-size: 22px; margin: 0; letter-spacing: .2px; }
+  header .device { color: var(--dim); font-size: 14px; }
+  .conn { font-size: 14px; color: var(--dim); border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px; white-space: nowrap; }
+  .grid { display: grid; gap: 16px; grid-template-columns: 1fr; }
+  @media (min-width: 900px) { .grid { grid-template-columns: 1.05fr 1fr; } }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; }
+  .card h2 { font-size: 13px; letter-spacing: .12em; text-transform: uppercase; color: var(--dim); margin: 0 0 14px; }
+  .now { display: grid; grid-template-columns: 132px 1fr; gap: 16px; align-items: center; }
+  .art { width: 132px; height: 132px; border-radius: 16px; background: linear-gradient(135deg,#3b2163,#120e1c);
+    display: grid; place-items: center; overflow: hidden; border: 1px solid var(--line); }
+  .art img { width: 100%; height: 100%; object-fit: cover; }
+  .art svg { width: 56px; height: 56px; opacity: .85; }
+  .title { font-size: 22px; font-weight: 700; margin: 0 0 4px; overflow-wrap: anywhere; }
+  .meta { color: var(--dim); margin: 0; overflow-wrap: anywhere; }
+  .state { display: inline-block; margin-top: 8px; font-size: 13px; font-weight: 600; letter-spacing: .04em;
+    border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px; color: var(--text); }
+  .progress { margin-top: 16px; }
+  .times { display: flex; justify-content: space-between; color: var(--dim); font-size: 13px; font-variant-numeric: tabular-nums; }
+  input[type=range] { width: 100%; accent-color: var(--accent); height: 28px; }
+  .controls { display: flex; justify-content: center; align-items: center; gap: 14px; margin-top: 10px; flex-wrap: wrap; }
+  button { font: inherit; color: var(--text); background: var(--card2); border: 1px solid var(--line); border-radius: 16px;
+    padding: 12px 14px; cursor: pointer; display: inline-flex; flex-direction: column; align-items: center; gap: 4px; min-width: 76px; }
+  button:hover { border-color: #4a5060; }
+  button:active { transform: scale(.97); }
+  button:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+  button .lbl { font-size: 13px; color: var(--dim); }
+  button svg { width: 28px; height: 28px; }
+  button.big { min-width: 96px; padding: 14px 18px; border-width: 2px; }
+  button.big svg { width: 36px; height: 36px; }
+  .vol { display: grid; grid-template-columns: auto 1fr auto auto; gap: 12px; align-items: center; margin-top: 18px; }
+  .vol .num { min-width: 52px; text-align: right; color: var(--dim); font-variant-numeric: tabular-nums; }
+  .vol button { min-width: 52px; padding: 8px; flex-direction: row; }
+  .apps { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 10px; }
+  .apps button { width: 100%; padding: 14px 8px; border-radius: 18px; }
+  .apps button .name { font-weight: 700; font-size: 15px; }
+  .apps button[disabled] { opacity: .45; cursor: not-allowed; }
+  .link { display: grid; gap: 10px; }
+  .link input { width: 100%; font: inherit; color: var(--text); background: var(--card2); border: 1px solid var(--line);
+    border-radius: 14px; padding: 12px 14px; }
+  .link .row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .link .row button { flex: 1 1 140px; flex-direction: row; justify-content: center; }
+  .hint { border: 1px dashed #545a68; border-radius: 14px; padding: 10px 12px; color: var(--dim); font-size: 14px; margin-top: 12px; }
+  .hint strong { color: var(--text); }
+  .toast { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); background: #f4f5f7; color: #0b0c10;
+    font-weight: 600; padding: 10px 16px; border-radius: 999px; opacity: 0; transition: opacity .2s; pointer-events: none; max-width: 90vw; }
+  .toast.show { opacity: 1; }
+  .login { max-width: 380px; margin: 12vh auto 0; text-align: center; }
+  .login input { width: 100%; font-size: 28px; letter-spacing: .4em; text-align: center; color: var(--text); background: var(--card2);
+    border: 1px solid var(--line); border-radius: 16px; padding: 14px; margin: 14px 0; }
+  .login button { width: 100%; flex-direction: row; justify-content: center; font-weight: 700; }
+  .err { color: #ffd7d7; min-height: 22px; font-size: 14px; }
+  @media (max-width: 520px) {
+    .controls { gap: 8px; }
+    .controls button { min-width: 64px; padding: 10px 8px; }
+    .controls button.big { min-width: 80px; }
+    .vol { grid-template-columns: 1fr auto; row-gap: 6px; }
+    .vol > :nth-child(1) { grid-row: 1; grid-column: 1; }
+    .vol > :nth-child(3) { grid-row: 1; grid-column: 2; }
+    .vol > :nth-child(2) { grid-row: 2; grid-column: 1; }
+    .vol > :nth-child(4) { grid-row: 2; grid-column: 2; }
+    .now { grid-template-columns: 104px 1fr; }
+    .art { width: 104px; height: 104px; }
+  }
+  .head-actions { display: flex; align-items: center; gap: 10px; }
+  button.qr-btn { flex-direction: row; min-width: 0; padding: 7px 12px; border-radius: 999px; gap: 6px; font-size: 14px; }
+  button.qr-btn svg { width: 20px; height: 20px; }
+  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,.72); display: grid; place-items: center; padding: 16px; z-index: 10; }
+  .qr-card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; max-width: 360px; width: 100%; text-align: center; }
+  .qr-card h2 { font-size: 18px; margin: 0 0 6px; }
+  .qr-card .qr { background: #fff; border-radius: 14px; padding: 6px; margin: 14px auto; width: min(280px, 100%); aspect-ratio: 1; display: grid; place-items: center; }
+  .qr-card .qr img { width: 100%; height: 100%; image-rendering: pixelated; }
+  .qr-card button { width: 100%; flex-direction: row; justify-content: center; font-weight: 700; margin-top: 8px; }
+  .tabs { display: flex; gap: 8px; margin: 0 2px 16px; }
+  .tabs button { flex: 1 1 auto; flex-direction: row; justify-content: center; min-width: 0; border-radius: 22px; padding: 10px 10px; font-weight: 700; font-size: 15px; white-space: nowrap; line-height: 1.15; text-align: center; }
+  .tabs button[aria-selected="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+  .pad { position: relative; height: max(260px, 46vh); border-radius: 18px; border: 2px dashed #4a5060; background: #12141a;
+    touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; display: grid; place-items: center; }
+  .pad.active { border-color: var(--accent); }
+  .pad p { color: var(--dim); font-size: 14px; text-align: center; margin: 0; padding: 12px; pointer-events: none; }
+  .navrow { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 12px; }
+  .navrow button { min-width: 0; padding: 10px 4px; touch-action: manipulation; }
+  .kb input { width: 100%; font: inherit; font-size: 18px; color: var(--text); background: var(--card2); border: 1px solid var(--line); border-radius: 14px; padding: 14px; }
+  .kb .row { display: grid; grid-template-columns: 1fr 1fr 1.4fr; gap: 8px; margin-top: 10px; }
+  .kb .row button { min-width: 0; flex-direction: row; justify-content: center; gap: 6px; white-space: nowrap; touch-action: manipulation; }
+  button.primary { background: var(--text); color: var(--bg); border-color: var(--text); font-weight: 700; }
+  .files { grid-column: 1 / -1; }
+  .roots { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+  .roots button { flex-direction: row; min-width: 0; border-radius: 999px; padding: 8px 14px; gap: 8px; }
+  .roots button[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+  .roots button .lbl { color: inherit; opacity: .75; }
+  .ftools { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 10px; }
+  .ftools button { flex-direction: row; min-width: 0; padding: 8px 12px; font-size: 15px; touch-action: manipulation; }
+  .crumbs { color: var(--dim); font-size: 14px; margin: 4px 2px 10px; overflow-wrap: anywhere; }
+  .crumbs a { color: var(--text); text-decoration: none; }
+  .flist { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+  .flist li { border-bottom: 1px solid var(--line); }
+  .flist button { width: 100%; flex-direction: row; justify-content: flex-start; gap: 12px; border: 0; border-radius: 0; background: none;
+    padding: 12px 6px; min-width: 0; text-align: left; touch-action: manipulation; }
+  .flist button:hover { background: var(--card2); }
+  .flist svg { width: 28px; height: 28px; flex: none; }
+  .flist .fn { display: block; overflow-wrap: anywhere; }
+  .flist .fm { display: block; font-size: 13px; color: var(--dim); }
+  .ups { display: grid; gap: 6px; margin-bottom: 10px; }
+  .up { font-size: 13px; color: var(--dim); }
+  .up progress { width: 100%; height: 8px; accent-color: var(--accent); }
+  .sheet { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; max-width: 420px; width: 100%; }
+  .sheet h2 { font-size: 17px; margin: 0 0 4px; overflow-wrap: anywhere; }
+  .sheet .acts { display: grid; gap: 8px; margin-top: 14px; }
+  .sheet .acts button { flex-direction: row; justify-content: center; width: 100%; }
+  button.danger { border-color: #7a3b3b; color: #ffd7d7; }
+  .yt { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 8px; }
+  .yt button { width: 100%; flex-direction: row; justify-content: flex-start; align-items: center; gap: 12px; padding: 8px; text-align: left; min-width: 0; touch-action: manipulation; }
+  .yt .th { width: 128px; aspect-ratio: 16 / 9; border-radius: 10px; background: #2a2e38; flex: none; overflow: hidden; }
+  .yt .th img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .yt .tt { font-weight: 700; font-size: 15px; overflow-wrap: anywhere; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .yt .ch { display: block; font-size: 13px; color: var(--dim); margin-top: 2px; }
+  .ythead { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; color: var(--dim); font-size: 14px; }
+  .ythead button { min-width: 0; padding: 6px 12px; flex-direction: row; }
+  .hidden { display: none !important; }
+  footer { color: var(--dim); font-size: 12px; text-align: center; margin-top: 18px; }
+  /* ---- Music (Player Pure) ---- */
+  .signal { display: inline-block; margin-top: 8px; font-size: 12px; font-weight: 700; letter-spacing: .1em; border-radius: 999px; padding: 3px 10px; border: 1px solid var(--line); color: var(--dim); }
+  .signal.bp { border: 2px solid #e9d7b0; color: #e9d7b0; }
+  .dac { background: #000; border: 1px solid #2a2d35; border-radius: 16px; padding: 14px 16px; }
+  .dac .top { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .dac .dname { color: var(--dim); font-size: 14px; overflow-wrap: anywhere; }
+  .dac .top .signal { margin-top: 0; }
+  .dac .mid { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; flex-wrap: wrap; margin-top: 10px; }
+  .dac .rate { font-size: 46px; font-weight: 300; line-height: 1; }
+  .dac .rate small { font-size: 16px; color: var(--dim); margin-left: 6px; }
+  .dac .fmt { font-size: 15px; margin-top: 6px; }
+  .dac .vlbl { font-size: 11px; letter-spacing: .12em; color: var(--dim); text-align: right; }
+  .dac .vval { font-size: 26px; font-weight: 300; text-align: right; }
+  .dac .muted { display: inline-block; margin-top: 4px; font-size: 12px; font-weight: 700; letter-spacing: .12em; color: #e9d7b0; border: 1.5px solid #e9d7b0; border-radius: 999px; padding: 2px 10px; }
+  .dac .dstate { color: var(--dim); font-size: 14px; margin: 10px 0 0; }
+  .dac .vval.txt { font-size: 17px; }
+  .dacbtns { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+  .dacbtns button { flex: 1 1 90px; flex-direction: row; justify-content: center; font-weight: 700; }
+  .ppbar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 12px; }
+  .ppbar input { flex: 1 1 180px; font: inherit; color: var(--text); background: var(--card2); border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; }
+  .ppbar button { flex-direction: row; min-width: 0; }
+  .ppbar button[aria-pressed="true"] { border: 2px solid var(--text); font-weight: 700; }
+  .albums { display: grid; grid-template-columns: repeat(auto-fill, minmax(132px, 1fr)); gap: 12px; }
+  .albums button { padding: 8px; border-radius: 16px; align-items: stretch; text-align: left; min-width: 0; }
+  .albums .cv { width: 100%; aspect-ratio: 1; border-radius: 12px; background: linear-gradient(135deg,#3b2163,#120e1c); overflow: hidden; display: grid; place-items: center; }
+  .albums .cv img { width: 100%; height: 100%; object-fit: cover; }
+  .albums .at { font-weight: 700; font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .albums .aa { font-size: 13px; color: var(--dim); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ppalbum h3 { margin: 4px 0 2px; font-size: 20px; overflow-wrap: anywhere; }
+  .tracks { list-style: none; margin: 10px 0 0; padding: 0; border-top: 1px solid var(--line); }
+  .tracks li { display: flex; align-items: stretch; border-bottom: 1px solid var(--line); }
+  .tracks li > button:first-child { flex: 1; flex-direction: row; justify-content: flex-start; gap: 12px; border: 0; border-radius: 0; background: none; text-align: left; padding: 12px 8px; min-width: 0; }
+  .tracks li > button + button { min-width: 52px; border: 0; border-radius: 0; background: none; flex-direction: row; justify-content: center; }
+  .tracks .no { width: 30px; color: var(--dim); text-align: right; flex: none; font-variant-numeric: tabular-nums; }
+  .tracks .tt { flex: 1; overflow-wrap: anywhere; }
+  .tracks .td { color: var(--dim); font-size: 13px; font-variant-numeric: tabular-nums; flex: none; }
+  .tracks li.cur .tt { font-weight: 700; }
+  .tracks li.cur .no { color: var(--text); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <section id="login" class="login card hidden" aria-labelledby="loginTitle">
+    <h1 id="loginTitle" style="margin:0 0 6px;font-size:22px">Media Home Remote</h1>
+    <p class="meta" data-i18n-html="login.help">Enter the PIN shown on the tablet in<br>Media Home &rsaquo; Settings &rsaquo; Web remote.</p>
+    <input id="pin" inputmode="numeric" autocomplete="one-time-code" maxlength="12" aria-label="PIN">
+    <div id="loginErr" class="err" role="alert"></div>
+    <button id="loginBtn" type="button">Connect</button>
+  </section>
+
+  <main id="app" class="hidden">
+    <header>
+      <div><h1>Media Home Remote</h1><div class="device" id="device"></div></div>
+      <div class="head-actions">
+        <button class="qr-btn" id="qrBtn" type="button" aria-label="Show a QR code to connect another phone or tablet"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6"><path d="M3.5 3.5H10V10H3.5zM14 3.5h6.5V10H14zM3.5 14H10v6.5H3.5z"/><path d="M14 14h2.5v2.5H14zM18 14h2.5v2.5H18zM16 17h2.5v2.5H16zM14 18.5h1.5v2H14zM19 18.5h1.5v2H19z" fill="#fff" stroke="none"/></svg><span>QR</span></button>
+        <span class="conn" id="conn">Connecting&hellip;</span>
+      </div>
+    </header>
+
+    <div class="tabs" role="tablist">
+      <button role="tab" id="tabBtnMain" aria-controls="tabMain" aria-selected="true" type="button">Remote</button>
+      <button role="tab" id="tabBtnInput" aria-controls="tabInput" aria-selected="false" type="button">Mouse &amp; keys</button>
+      <button role="tab" id="tabBtnFiles" aria-controls="tabFiles" aria-selected="false" type="button">Files</button>
+      <button role="tab" id="tabBtnMusic" aria-controls="tabMusic" aria-selected="false" type="button">Music</button>
+    </div>
+
+    <div class="grid" id="tabMain" role="tabpanel" aria-labelledby="tabBtnMain">
+      <section class="card" aria-labelledby="npTitle">
+        <h2 id="npTitle">Now playing</h2>
+        <div class="now">
+          <div class="art" id="art" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round"><path d="M9 18V5.5L20 3.5V16"/><path d="M9 9l11-2"/><circle cx="6.6" cy="18" r="2.5" fill="#fff"/><circle cx="17.6" cy="16" r="2.5" fill="#fff"/></svg>
+          </div>
+          <div>
+            <p class="title" id="title">Nothing playing</p>
+            <p class="meta" id="artist"></p>
+            <p class="meta" id="appName"></p>
+            <span class="state" id="state">Stopped</span>
+          </div>
+        </div>
+        <div class="progress" id="progressBox">
+          <input type="range" id="seek" min="0" max="0" value="0" step="1000" aria-label="Position">
+          <div class="times"><span id="pos">0:00</span><span id="dur">0:00</span></div>
+        </div>
+        <div class="controls">
+          <button data-action="prev" aria-label="Previous track"><svg viewBox="0 0 24 24" fill="#fff"><path d="M6 5h2.2v14H6zM19 5.5v13L9.4 12z"/></svg><span class="lbl">Previous</span></button>
+          <button class="big" data-action="toggle" id="playBtn" aria-label="Play or pause"><svg viewBox="0 0 24 24" fill="#fff" id="playIcon"><path d="M3.5 5.5v13l9-6.5zM14.5 5.5H17v13h-2.5zM18.8 5.5h2.5v13h-2.5z"/></svg><span class="lbl" id="playLbl">Play / Pause</span></button>
+          <button data-action="next" aria-label="Next track"><svg viewBox="0 0 24 24" fill="#fff"><path d="M15.8 5H18v14h-2.2zM5 5.5v13l9.6-6.5z"/></svg><span class="lbl">Next</span></button>
+          <button data-action="stop" aria-label="Stop"><svg viewBox="0 0 24 24" fill="#fff"><rect x="6" y="6" width="12" height="12" rx="1.5"/></svg><span class="lbl">Stop</span></button>
+        </div>
+        <div class="vol">
+          <span class="lbl" style="color:var(--dim)">Volume</span>
+          <input type="range" id="vol" min="0" max="15" value="0" aria-label="Volume">
+          <span class="num" id="volNum">0</span>
+          <span style="display:flex;gap:8px"><button data-vol="-1" aria-label="Volume down">&minus;</button><button data-vol="1" aria-label="Volume up">+</button></span>
+        </div>
+        <div class="hint hidden" id="accessHint" data-i18n-html="hint.access"><strong>Tip:</strong> to see what's playing and seek, allow <strong>Notification access</strong> for Media Home on the tablet (Media Home &rsaquo; Settings &rsaquo; Web remote).</div>
+      </section>
+
+      <div style="display:grid;gap:16px;align-content:start">
+        <section class="card" aria-labelledby="appsTitle">
+          <h2 id="appsTitle">Open on the tablet</h2>
+          <div class="apps" id="apps">
+            <button data-target="MUSIC"><span class="name">Music</span><span class="lbl" data-app="MUSIC">-</span></button>
+            <button data-target="YOUTUBE"><span class="name">YouTube</span><span class="lbl" data-app="YOUTUBE">-</span></button>
+            <button data-target="VIDEO"><span class="name">Video</span><span class="lbl" data-app="VIDEO">-</span></button>
+            <button data-target="JELLYFIN"><span class="name">Jellyfin</span><span class="lbl" data-app="JELLYFIN">-</span></button>
+            <button data-target="EMBY"><span class="name">Emby</span><span class="lbl" data-app="EMBY">-</span></button>
+            <button data-target="BROWSER"><span class="name">Browser</span><span class="lbl" data-app="BROWSER">-</span></button>
+            <button data-target="AIRPLAY"><span class="name">AirPlay</span><span class="lbl" data-app="AIRPLAY">-</span></button>
+            <button data-target="KODI"><span class="name">Kodi</span><span class="lbl" data-app="KODI">-</span></button>
+            <button data-target="HOME"><span class="name">Home screen</span><span class="lbl">Media Home</span></button>
+            <button id="wakeBtn"><span class="name">Wake screen</span><span class="lbl">Turn display on</span></button>
+          </div>
+          <div class="hint hidden" id="launchHint" data-i18n-html="hint.launch"><strong>Tip:</strong> to open apps from here, allow <strong>Display over other apps</strong> for Media Home on the tablet (Media Home &rsaquo; Settings &rsaquo; Web remote).</div>
+        </section>
+
+        <section class="card" aria-labelledby="linkTitle">
+          <h2 id="linkTitle">Brave: open a link, search, or play</h2>
+          <div class="link">
+            <input id="url" type="text" inputmode="search" enterkeyhint="go" autocomplete="off" autocapitalize="off"
+              placeholder="Paste a link, or type what to search for" aria-label="Link or search words">
+            <div class="row">
+              <button id="goBtn" class="primary" type="button"><span>Go in Brave</span></button>
+              <button id="firstBtn" type="button"><span>&#9654; Play first video</span></button>
+              <button id="pickBtn" type="button"><span>Search &amp; pick a video</span></button>
+              <button id="ytBtn" type="button"><span>Search YouTube</span></button>
+              <button data-open="vlc" type="button"><span>Play link in VLC</span></button>
+            </div>
+            <div class="ythead hidden" id="ytHead"><span id="ytHeadText">Tap a video to play it full screen on the tablet</span>
+              <button type="button" id="ytClose">Close</button></div>
+            <ul class="yt" id="ytList"></ul>
+            <div class="hint hidden" id="ytKeyBox">
+              <p style="margin:0 0 8px" data-i18n-html="hint.ytkey"><strong>Play first video</strong> uses YouTube's official search, which needs your own free
+                <strong>YouTube API key</strong> (one time, about 5 minutes: see <em>YouTube key</em> in the manual). Paste it here; it is kept only on the tablet.</p>
+              <div class="row">
+                <input id="ytKey" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="AIza..." aria-label="YouTube API key">
+                <button id="ytKeySave" type="button" class="primary"><span>Save key</span></button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <div class="grid hidden" id="tabInput" role="tabpanel" aria-labelledby="tabBtnInput">
+      <section class="card" aria-labelledby="padTitle">
+        <h2 id="padTitle">Touchpad</h2>
+        <div class="pad" id="pad" aria-label="Touchpad: move one finger to move the pointer, tap to click, two fingers to scroll, hold to long-press">
+          <p data-i18n-html="pad.help">Move: one finger &middot; Click: tap<br>Scroll: two fingers &middot; Long press: hold</p>
+        </div>
+        <div class="navrow">
+          <button type="button" data-nav="back"><span class="name">Back</span></button>
+          <button type="button" data-nav="home"><span class="name">Home</span></button>
+          <button type="button" data-nav="recents"><span class="name">Apps</span></button>
+          <button type="button" data-ptr="tap"><span class="name">Click</span></button>
+          <button type="button" data-scroll="up"><span class="name">Scroll &uarr;</span></button>
+          <button type="button" data-scroll="down"><span class="name">Scroll &darr;</span></button>
+          <button type="button" data-ptr="longpress"><span class="name">Hold</span></button>
+          <button type="button" data-nav="notifications"><span class="name">Alerts</span></button>
+          <button type="button" data-nav="fullscreen"><span class="name">Full screen</span></button>
+        </div>
+      </section>
+      <section class="card kb" aria-labelledby="kbTitle">
+        <h2 id="kbTitle">Keyboard</h2>
+        <input id="kb" type="text" autocomplete="off" enterkeyhint="go" placeholder="Type here: it appears on the tablet" aria-label="Text for the tablet">
+        <div class="row">
+          <button type="button" id="kbDel">&#9003; Delete</button>
+          <button type="button" id="kbClear">Clear</button>
+          <button type="button" id="kbEnter" class="primary">Enter &#8629;</button>
+        </div>
+        <p class="meta" style="font-size:14px;margin-top:12px">First tap a text field on the tablet (with the touchpad). What you type here replaces the text in that field.</p>
+        <div class="hint hidden" id="inputHint" data-i18n-html="hint.input"><strong>Turn on Mouse &amp; keyboard:</strong> on the tablet open Media Home &rsaquo; Settings &rsaquo; <em>Set up</em> &rsaquo; <em>Mouse and keyboard from the phone</em> and switch on <strong>Media Home remote mouse &amp; keyboard</strong>.</div>
+      </section>
+    </div>
+    <div class="grid hidden" id="tabFiles" role="tabpanel" aria-labelledby="tabBtnFiles">
+      <section class="card files" aria-labelledby="filesTitle">
+        <h2 id="filesTitle">Files on the tablet</h2>
+        <div class="roots" id="roots" role="group" aria-label="Drives"></div>
+        <div class="ftools">
+          <button type="button" id="fUp" aria-label="Up one folder">&uarr; Up</button>
+          <button type="button" id="fUpload" class="primary">Upload from this device</button>
+          <button type="button" id="fMkdir">New folder</button>
+          <button type="button" id="fRefresh">Refresh</button>
+          <button type="button" id="fTrash" class="danger">Empty trash</button>
+          <input type="file" id="fInput" multiple class="hidden" aria-hidden="true">
+        </div>
+        <div class="crumbs" id="crumbs"></div>
+        <div class="ups" id="ups"></div>
+        <ul class="flist" id="flist"></ul>
+        <p class="meta hidden" id="fTrunc" style="font-size:13px;margin-top:8px">Showing the first 5000 items of this folder.</p>
+        <div class="hint hidden" id="filesHint" data-i18n-html="hint.files"><strong>Allow All files access:</strong> on the tablet open Media Home &rsaquo; Settings &rsaquo; <em>Set up</em> &rsaquo; <em>Music and files</em> and switch it on for Media Home Pure.</div>
+      </section>
+    </div>
+    <div class="grid hidden" id="tabMusic" role="tabpanel" aria-labelledby="tabBtnMusic">
+      <section class="card" aria-labelledby="ppTitle">
+        <h2 id="ppTitle">Player Pure</h2>
+        <div class="now">
+          <div class="art" id="ppArt" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6z"/></svg></div>
+          <div>
+            <p class="title" id="ppSong">Nothing playing</p>
+            <p class="meta" id="ppMeta"></p>
+            <span class="signal hidden" id="ppSignal"></span>
+            <p class="meta" id="ppPath" style="font-size:13px;margin-top:6px"></p>
+          </div>
+        </div>
+        <div class="progress">
+          <input type="range" id="ppSeek" min="0" max="1000" value="0" aria-label="Position in the track">
+          <div class="times"><span id="ppPos">0:00</span><span id="ppDur">0:00</span></div>
+        </div>
+        <div class="controls">
+          <button type="button" data-pp="shuffle" id="ppShuffle" aria-pressed="false"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M10.6 9.2 5.4 4 4 5.4l5.2 5.2 1.4-1.4zM14.5 4l2 2L4 18.6 5.4 20 18 7.5l2 2V4h-5.5zm.3 9.4-1.4 1.4 3.1 3.1-2 2.1H20v-5.5l-2 2-3.2-3.1z"/></svg><span class="lbl">Shuffle</span></button>
+          <button type="button" data-pp="prev" aria-label="Previous track"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg><span class="lbl">Previous</span></button>
+          <button type="button" data-pp="toggle" class="big" id="ppPlay"><svg viewBox="0 0 24 24" fill="currentColor" id="ppPlayIcon"><path d="M7 5v14l11-7z"/></svg><span class="lbl" id="ppPlayLbl">Play</span></button>
+          <button type="button" data-pp="next" aria-label="Next track"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg><span class="lbl">Next</span></button>
+          <button type="button" data-pp="repeat" id="ppRepeat"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg><span class="lbl" id="ppRepeatLbl">Repeat off</span></button>
+        </div>
+        <div class="vol hidden" id="ppVolRow">
+          <span class="lbl" id="ppVolLbl">DAC volume</span>
+          <input type="range" id="ppVol" min="0" max="100" value="100" aria-label="Player Pure volume">
+          <span class="num" id="ppVolNum">100</span><span></span>
+        </div>
+        <p class="meta hidden" id="ppNoVol" style="font-size:14px;margin-top:14px">Volume: use the knob on the DAC or amplifier (Player Pure keeps the signal bit-perfect).</p>
+        <div class="hint hidden" id="ppHint" data-i18n-html="hint.pp"><strong>Player Pure is not responding.</strong> Open it once on the tablet, then try again.</div>
+      </section>
+      <section class="card hidden" id="ppDacCard" aria-labelledby="ppDacTitle">
+        <h2 id="ppDacTitle">DAC</h2>
+        <div class="dac" id="ppDacScreen" role="group" aria-label="DAC display">
+          <div class="top"><span class="dname" id="ppDacName"></span><span class="signal hidden" id="ppDacBadge"></span></div>
+          <div class="mid">
+            <div><div class="rate"><span id="ppDacRate"></span><small id="ppDacUnit"></small></div><div class="fmt" id="ppDacFormat"></div></div>
+            <div><div class="vlbl" id="ppDacVolLbl">VOLUME</div><div class="vval" id="ppDacVol"></div><div style="text-align:right"><span class="muted hidden" id="ppDacMuted">MUTED</span></div></div>
+          </div>
+          <p class="dstate" id="ppDacState"></p>
+        </div>
+        <div class="dacbtns hidden" id="ppDacBtns">
+          <button type="button" id="ppDacDown" aria-label="DAC volume down 1 dB">&minus;1 dB</button>
+          <button type="button" id="ppDacUp" aria-label="DAC volume up 1 dB">+1 dB</button>
+          <button type="button" id="ppDacMute" aria-pressed="false">Mute</button>
+        </div>
+        <p class="meta" style="font-size:13px;margin-top:12px">Input, filter, output, power and brightness can only be changed with the DAC's own buttons or its infrared remote, not over USB.</p>
+      </section>
+      <section class="card" aria-labelledby="ppLibTitle">
+        <h2 id="ppLibTitle">Library</h2>
+        <div class="ppbar">
+          <input type="search" id="ppSearch" placeholder="Search albums or artists" aria-label="Search albums or artists" autocomplete="off">
+          <button type="button" id="ppViewAlbums" aria-pressed="true">Albums</button>
+          <button type="button" id="ppViewQueue" aria-pressed="false">Queue</button>
+        </div>
+        <div id="ppAlbums" class="albums"></div>
+        <button type="button" id="ppMore" class="hidden" style="width:100%;margin-top:12px">Show more albums</button>
+        <div id="ppAlbum" class="ppalbum hidden">
+          <button type="button" id="ppBack" style="flex-direction:row;min-width:0">&larr; Albums</button>
+          <h3 id="ppAlbumTitle"></h3>
+          <p class="meta" id="ppAlbumMeta"></p>
+          <div class="link"><div class="row">
+            <button type="button" class="primary" id="ppAlbumPlay">Play</button>
+            <button type="button" id="ppAlbumShuffle">Shuffle</button>
+            <button type="button" id="ppAlbumNext">Play next</button>
+            <button type="button" id="ppAlbumAdd">Add to queue</button>
+          </div></div>
+          <ul class="tracks" id="ppTracks"></ul>
+        </div>
+        <div id="ppQueueBox" class="hidden">
+          <div class="link"><div class="row"><button type="button" id="ppClear">Clear the queue</button></div></div>
+          <ul class="tracks" id="ppQueue"></ul>
+        </div>
+      </section>
+    </div>
+    <footer>Local network only &middot; PIN protected &middot; <a href="#" id="logout" style="color:var(--dim)">Change PIN</a></footer>
+  </main>
+</div>
+<div class="overlay hidden" id="qrOverlay" role="dialog" aria-modal="true" aria-labelledby="qrTitle">
+  <div class="qr-card">
+    <h2 id="qrTitle">Connect another device</h2>
+    <p class="meta">Scan with a phone camera. It opens this remote and signs in with the PIN automatically.</p>
+    <div class="qr" id="qrBox"></div>
+    <p class="meta" style="font-size:13px">Anyone who scans it can control the tablet while on your Wi-Fi.</p>
+    <button type="button" id="qrClose">Close</button>
+  </div>
+</div>
+<div class="overlay hidden" id="fSheet" role="dialog" aria-modal="true" aria-labelledby="fsName">
+  <div class="sheet">
+    <h2 id="fsName"></h2>
+    <p class="meta" id="fsMeta" style="font-size:14px"></p>
+    <div class="acts">
+      <button type="button" id="fsPlay" class="primary">Play on the tablet</button>
+      <button type="button" id="fsSave">Save to this device</button>
+      <button type="button" id="fsRename">Rename</button>
+      <button type="button" id="fsDelete" class="danger">Delete (move to trash)</button>
+      <button type="button" id="fsClose">Cancel</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  // ---- languages: the tablet sends the words of the language chosen in Media Home > Settings > Language ----
+  var I18N = {}; try { I18N = JSON.parse($('i18n').textContent || '{}') || {}; } catch (e) {}
+  var DICT = I18N.t || {}, SRV = I18N.e || {}, LANG = document.documentElement.lang || 'en';
+  /** The text in the chosen language ({0}, {1}... are filled from [a]); English when there is no translation. */
+  function T(s, a) {
+    var r = DICT[s] || s;
+    if (a) r = r.replace(/\{(\d)\}/g, function (m, i) { return a[+i] == null ? '' : String(a[+i]); });
+    return r;
+  }
+  /** Words that come from the tablet (errors, Player Pure's DAC display) in the chosen language when known. */
+  function TE(s) {
+    if (!s) return s;
+    if (DICT[s]) return DICT[s];
+    if (SRV[s]) return SRV[s];
+    var q = /^"(.*)" already exists$/.exec(s); if (q && SRV['"{0}" already exists']) return SRV['"{0}" already exists'].replace('{0}', q[1]);
+    q = /^Playing: (.*)$/.exec(s); if (q && DICT['Playing: {0}']) return T('Playing: {0}', [q[1]]);
+    return s;
+  }
+  function norm(t) { return t.trim().replace(/\s+/g, ' '); }
+  /** Puts the page's own words into the chosen language, once at start. */
+  function translatePage() {
+    if (!Object.keys(DICT).length) return;
+    document.title = T(document.title);
+    Array.prototype.forEach.call(document.querySelectorAll('[data-i18n-html]'), function (el) {
+      var k = el.getAttribute('data-i18n-html'); if (DICT[k]) el.innerHTML = DICT[k];
+    });
+    var w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, { acceptNode: function (nd) {
+      var p = nd.parentNode;
+      if (!p || !p.closest || p.closest('script,style,[data-i18n-html]')) return NodeFilter.FILTER_REJECT;
+      return nd.nodeValue.trim() ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+    } });
+    var nodes = []; while (w.nextNode()) nodes.push(w.currentNode);
+    nodes.forEach(function (nd) {
+      var raw = nd.nodeValue, k = norm(raw);
+      if (DICT[k]) nd.nodeValue = raw.match(/^\s*/)[0] + DICT[k] + raw.match(/\s*$/)[0];
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('[placeholder],[aria-label],[title]'), function (el) {
+      ['placeholder', 'aria-label', 'title'].forEach(function (a) {
+        var v = el.getAttribute(a); if (v && DICT[norm(v)]) el.setAttribute(a, DICT[norm(v)]);
+      });
+    });
+  }
+  translatePage();
+  /** Long tab names (German, Russian...): smaller text until every name fits on one line; only then may names wrap. */
+  function fitTabs() {
+    var row = document.querySelector('.tabs'); if (!row || !row.clientWidth) return;
+    var bs = Array.prototype.slice.call(row.querySelectorAll('button'));
+    var set = function (f, pad, ws) { bs.forEach(function (b) { b.style.fontSize = f ? f + 'px' : ''; b.style.paddingLeft = b.style.paddingRight = pad; b.style.whiteSpace = ws; }); };
+    var over = function () { return row.scrollWidth > row.clientWidth + 1 || bs.some(function (b) { return b.scrollWidth > b.clientWidth + 1; }); };
+    set(0, '', ''); if (!over()) return;
+    for (var f = 14; f >= 11; f--) { set(f, '6px', 'nowrap'); if (!over()) return; }
+    set(12, '6px', 'normal');
+  }
+  window.addEventListener('resize', fitTabs);
+  var pin = '';
+  try { pin = localStorage.getItem('mh_pin') || ''; } catch (e) {}
+  // Opened from the tablet's QR code: http://<tablet>:8080/#pin=NNNN. The part after "#" never leaves this browser.
+  var m = /(?:^#|&)pin=([^&]+)/.exec(location.hash || '');
+  if (m) {
+    try { pin = decodeURIComponent(m[1]); } catch (e) { pin = m[1]; }
+    try { localStorage.setItem('mh_pin', pin); } catch (e) {}
+    try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {}
+  }
+  var last = null, artKey = null, artUrl = null, dragging = false, timer = null;
+  var artPlaceholder = $('art').innerHTML;
+
+  function toast(msg) { var t = $('toast'); t.textContent = TE(msg); t.classList.add('show'); clearTimeout(t._h); t._h = setTimeout(function () { t.classList.remove('show'); }, 2200); }
+  function fmt(ms) { ms = Math.max(0, Math.floor((ms || 0) / 1000)); var h = Math.floor(ms / 3600), m = Math.floor(ms % 3600 / 60), s = ms % 60;
+    return (h ? h + ':' + String(m).padStart(2, '0') : m) + ':' + String(s).padStart(2, '0'); }
+
+  function call(method, path, params) {
+    var q = params ? '?' + new URLSearchParams(params).toString() : '';
+    return fetch(path + q, { method: method, headers: { 'X-Pin': pin }, cache: 'no-store' }).then(function (r) {
+      if (r.status === 401) { showLogin('Wrong PIN - please try again.'); throw new Error('pin'); }
+      if (r.status === 429) { showLogin('Too many wrong PINs. Wait 10 minutes, then try again.'); throw new Error('locked'); }
+      return r;
+    });
+  }
+  function post(path, params, okMsg) {
+    return call('POST', path, params).then(function (r) { return r.json().then(function (j) {
+      if (r.ok) { if (okMsg) toast(okMsg); } else { toast(j.error || 'The tablet could not do that'); }
+      setTimeout(poll, 350);
+    }); }).catch(function () {});
+  }
+
+  function showLogin(msg) {
+    $('app').classList.add('hidden'); $('login').classList.remove('hidden');
+    $('loginErr').textContent = TE(msg) || ''; $('pin').value = ''; $('pin').focus();
+    if (timer) { clearInterval(timer); timer = null; }
+  }
+  function showApp() {
+    $('login').classList.add('hidden'); $('app').classList.remove('hidden');
+    fitTabs();
+    poll(); if (!timer) timer = setInterval(poll, 1500);
+    if (!$('tabFiles').classList.contains('hidden') && !fs.loaded) loadRoots();
+  }
+  // Stop asking for the status while the page is hidden (phone locked, other app or tab): saves the phone's battery,
+  // and lets the tablet show its QR code again about 15 s later.
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden) { if (timer) { clearInterval(timer); timer = null; } }
+    else if (pin && $('login').classList.contains('hidden')) { poll(); if (!timer) timer = setInterval(poll, 1500); }
+  });
+  function login() {
+    pin = $('pin').value.trim(); if (!pin) return;
+    call('GET', '/api/ping').then(function (r) { if (r.ok) { try { localStorage.setItem('mh_pin', pin); } catch (e) {} showApp(); } }).catch(function () {});
+  }
+
+  function render(s) {
+    last = s;
+    if (s.lang && s.lang !== LANG) { location.reload(); return; }   // language changed on the tablet
+    $('conn').textContent = T('Connected');
+    $('device').textContent = (s.device || '') + (s.dac ? ' \u00b7 ' + T('USB DAC: {0}', [s.dac]) : '');
+    $('title').textContent = s.title || (s.app ? T('Playing in {0}', [s.app]) : T('Nothing playing'));
+    $('artist').textContent = [s.artist, s.album].filter(Boolean).join(' · ');
+    $('appName').textContent = s.app ? T('App: {0}', [s.app]) : '';
+    var labels = { playing: 'Playing', paused: 'Paused', stopped: 'Stopped', buffering: 'Buffering', error: 'Error', idle: 'Idle', none: 'Nothing playing' };
+    $('state').textContent = labels[s.state] ? T(labels[s.state]) : s.state;
+    $('playLbl').textContent = s.playing ? T('Pause') : T('Play');
+    $('playIcon').innerHTML = s.playing ? '<path d="M6 5h4v14H6zM14 5h4v14h-4z"/>' : '<path d="M7 5v14l11-7z"/>';
+    var dur = s.durationMs || 0;
+    $('progressBox').classList.toggle('hidden', !(dur > 0));
+    if (!dragging) { $('seek').max = dur; $('seek').value = Math.min(s.positionMs || 0, dur); $('pos').textContent = fmt(s.positionMs); }
+    $('dur').textContent = fmt(dur);
+    $('seek').disabled = !s.canSeek;
+    if (document.activeElement !== $('vol')) { $('vol').max = s.volumeMax || 15; $('vol').value = s.volume || 0; }
+    $('volNum').textContent = (s.volume || 0) + ' / ' + (s.volumeMax || 15);
+    $('accessHint').classList.toggle('hidden', !!s.access);
+    $('launchHint').classList.toggle('hidden', !!s.canLaunch);
+    $('inputHint').classList.toggle('hidden', s.input !== false);
+    if (s.files === false) $('filesHint').classList.remove('hidden');
+    var apps = s.apps || {};
+    Array.prototype.forEach.call(document.querySelectorAll('[data-app]'), function (el) {
+      var k = el.getAttribute('data-app'); var name = apps[k];
+      el.textContent = name ? (k === 'YOUTUBE' ? T('in {0}', [name]) : name) : T('Not installed');
+      el.parentNode.disabled = !name;
+    });
+    if (s.artKey !== artKey) {
+      artKey = s.artKey;
+      if (s.hasArt) {
+        call('GET', '/api/art').then(function (r) { return r.ok ? r.blob() : null; }).then(function (b) {
+          if (!b) return; if (artUrl) URL.revokeObjectURL(artUrl); artUrl = URL.createObjectURL(b);
+          $('art').innerHTML = ''; var img = new Image(); img.alt = ''; img.src = artUrl; $('art').appendChild(img);
+        }).catch(function () {});
+      } else { if (artUrl) URL.revokeObjectURL(artUrl); artUrl = null; $('art').innerHTML = artPlaceholder; }
+    }
+  }
+  function poll() {
+    if (!$('tabMusic').classList.contains('hidden')) ppPoll();
+    call('GET', '/api/status').then(function (r) { return r.json(); }).then(render)
+      .catch(function (e) { if (e && (e.message === 'pin' || e.message === 'locked')) return; $('conn').textContent = T('Not connected - retrying'); });
+  }
+
+  document.addEventListener('click', function (ev) {
+    var b = ev.target.closest('button'); if (!b) return;
+    if (b.dataset.action) post('/api/control', { action: b.dataset.action });
+    else if (b.dataset.target) post('/api/launch', { target: b.dataset.target }, 'Opening on the tablet');
+    else if (b.dataset.vol) post('/api/volume', { delta: b.dataset.vol });
+    else if (b.dataset.open) {
+      var u = linkOf($('url').value);
+      if (!u) { toast('Paste a media link first'); return; }
+      post('/api/open', { url: u, app: b.dataset.open }, 'Playing in VLC');
+    } else if (b.id === 'wakeBtn') post('/api/wake', null, 'Screen on');
+    else if (b.dataset.nav) queueInput('/api/nav', { action: b.dataset.nav });
+    else if (b.dataset.ptr) queueInput('/api/pointer', { action: b.dataset.ptr });
+    else if (b.dataset.scroll) queueInput('/api/pointer', { action: 'scroll', dx: 0, dy: b.dataset.scroll === 'up' ? 500 : -500 });
+  });
+
+  // ---- Brave: a link opens, anything else is searched (same rule as the tablet's InputLogic.linkOrNull) ----
+  function linkOf(text) {
+    var t = (text || '').trim();
+    if (!t || /\s/.test(t)) return null;
+    if (/^(https?|rtsp|rtmp|smb):\/\/\S+$/i.test(t)) return t;
+    if (/^([a-z0-9-]+\.)+[a-z]{2,24}(:\d{1,5})?([\/?#]\S*)?$/i.test(t)) return 'https://' + t;
+    return null;
+  }
+  function goBrave() {
+    var t = $('url').value.trim(); if (!t) { toast('Type a link or something to search for'); return; }
+    var u = linkOf(t);
+    if (u) post('/api/open', { url: u, app: 'brave' }, 'Opening in Brave');
+    else post('/api/search', { q: t, engine: 'web' }, 'Searching in Brave');
+  }
+  $('goBtn').addEventListener('click', goBrave);
+  var lastYt = 'first';
+  function playFirst() {
+    lastYt = 'first';
+    var t = $('url').value.trim(); if (!t) { toast('Type what to play, for example a song or artist'); return; }
+    toast('Finding the first video...');
+    call('POST', '/api/youtube/first', { q: t }).then(function (r) { return r.json().then(function (j) {
+      if (r.ok) { $('ytKeyBox').classList.add('hidden'); toast(T('Playing: {0}', [j.title || T('first video')])); setTimeout(poll, 1500); return; }
+      ytFail(j);
+    }); }).catch(function () {});
+  }
+  $('firstBtn').addEventListener('click', playFirst);
+
+  // ---- Search & pick: YouTube results on the phone, tap one to play it full screen on the tablet ----
+  var ytThumbs = [];
+  function clearPicks() {
+    ytThumbs.forEach(function (u) { URL.revokeObjectURL(u); }); ytThumbs = [];
+    $('ytList').innerHTML = ''; $('ytHead').classList.add('hidden');
+  }
+  function ytFail(j) {
+    if (j.code === 'no_yt_key' || j.code === 'yt_key_rejected') { $('ytKeyBox').classList.remove('hidden'); $('ytKey').focus(); }
+    toast(j.error || 'The tablet could not do that');
+  }
+  function searchPick() {
+    lastYt = 'pick';
+    var t = $('url').value.trim(); if (!t) { toast('Type what to search for, for example a song or artist'); return; }
+    toast('Searching YouTube...');
+    call('POST', '/api/youtube/search', { q: t }).then(function (r) { return r.json().then(function (j) {
+      if (!r.ok) { ytFail(j); return; }
+      $('ytKeyBox').classList.add('hidden');
+      clearPicks();
+      var vids = j.videos || [];
+      $('ytHead').classList.remove('hidden');
+      $('ytHeadText').textContent = vids.length ? T('Tap a video to play it full screen on the tablet') : T('No videos found');
+      vids.forEach(function (v) {
+        var li = document.createElement('li'), b = document.createElement('button'); b.type = 'button';
+        var th = document.createElement('span'); th.className = 'th';
+        var tx = document.createElement('span');
+        var tt = document.createElement('span'); tt.className = 'tt'; tt.textContent = v.title;
+        var ch = document.createElement('span'); ch.className = 'ch'; ch.textContent = v.channel;
+        tx.appendChild(tt); tx.appendChild(ch);
+        b.appendChild(th); b.appendChild(tx); b.setAttribute('aria-label', T('Play {0} by {1}', [v.title, v.channel]));
+        b.addEventListener('click', function () { post('/api/youtube/play', { id: v.id }, T('Playing: {0}', [v.title])); });
+        li.appendChild(b); $('ytList').appendChild(li);
+        call('GET', '/api/youtube/thumb', { id: v.id }).then(function (r2) { return r2.ok ? r2.blob() : null; }).then(function (bl) {
+          if (!bl) return; var u = URL.createObjectURL(bl); ytThumbs.push(u);
+          var img = new Image(); img.alt = ''; img.src = u; th.appendChild(img);
+        }).catch(function () {});
+      });
+    }); }).catch(function () {});
+  }
+  $('pickBtn').addEventListener('click', searchPick);
+  $('ytClose').addEventListener('click', clearPicks);
+  $('ytKeySave').addEventListener('click', function () {
+    var k = $('ytKey').value.trim(); if (!k) { toast('Paste the key first'); return; }
+    call('POST', '/api/youtube/key', { key: k }).then(function (r) { return r.json().then(function (j) {
+      if (!r.ok) { toast(j.error || 'That key was not accepted'); return; }
+      $('ytKey').value = ''; $('ytKeyBox').classList.add('hidden'); toast('Key saved');
+      if ($('url').value.trim()) (lastYt === 'pick' ? searchPick : playFirst)();
+    }); }).catch(function () {});
+  });
+  $('ytBtn').addEventListener('click', function () {
+    var t = $('url').value.trim(); if (!t) { toast('Type what to search for on YouTube'); return; }
+    post('/api/search', { q: t, engine: 'youtube' }, 'Searching YouTube in Brave');
+  });
+  $('url').addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); goBrave(); } });
+
+  // ---- tabs ----
+  var TABS = { main: ['tabMain', 'tabBtnMain'], input: ['tabInput', 'tabBtnInput'], files: ['tabFiles', 'tabBtnFiles'], music: ['tabMusic', 'tabBtnMusic'] };
+  function showTab(name) {
+    if (!TABS[name]) name = 'main';
+    Object.keys(TABS).forEach(function (k) {
+      $(TABS[k][0]).classList.toggle('hidden', k !== name); $(TABS[k][1]).setAttribute('aria-selected', String(k === name));
+    });
+    try { localStorage.setItem('mh_tab', name); } catch (e) {}
+    if (name === 'files' && !fs.loaded && pin) loadRoots();
+    if (name === 'music' && pin) { ppPoll(); if (!pp.loaded) ppLoadAlbums(true); }
+  }
+  $('tabBtnMain').addEventListener('click', function () { showTab('main'); });
+  $('tabBtnInput').addEventListener('click', function () { showTab('input'); });
+  $('tabBtnFiles').addEventListener('click', function () { showTab('files'); });
+  $('tabBtnMusic').addEventListener('click', function () { showTab('music'); });
+
+  // ---- Files ----
+  var fs = { loaded: false, roots: [], root: null, path: '', sel: null };
+  function size(n) {
+    if (n < 1024) return n + ' B';
+    var u = ['KB', 'MB', 'GB', 'TB'], i = -1;
+    do { n /= 1024; i++; } while (n >= 1024 && i < u.length - 1);
+    return (n >= 100 ? n.toFixed(0) : n.toFixed(1)) + ' ' + u[i];
+  }
+  var ICONS = {
+    folder: '<path d="M3 6.5a1.5 1.5 0 0 1 1.5-1.5h4.2l2 2h8.8A1.5 1.5 0 0 1 21 8.5v9a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 17.5z" fill="#e8c76a"/>',
+    audio: '<path d="M9 18V5.5L20 3.5V16" stroke="#c9b6ff" stroke-width="1.8" fill="none"/><circle cx="6.6" cy="18" r="2.6" fill="#c9b6ff"/><circle cx="17.6" cy="16" r="2.6" fill="#c9b6ff"/>',
+    video: '<rect x="3" y="5" width="18" height="14" rx="2" fill="none" stroke="#8fd0ff" stroke-width="1.8"/><path d="M10 9v6l5-3z" fill="#8fd0ff"/>',
+    image: '<rect x="3" y="5" width="18" height="14" rx="2" fill="none" stroke="#9be3a6" stroke-width="1.8"/><path d="M5 17l5-5 4 4 2-2 3 3z" fill="#9be3a6"/>',
+    other: '<path d="M6 3h8l4 4v14H6z" fill="none" stroke="#b4b9c4" stroke-width="1.8"/><path d="M14 3v4h4" fill="none" stroke="#b4b9c4" stroke-width="1.8"/>'
+  };
+  function filesCall(method, path, params) {
+    return call(method, path, params).then(function (r) {
+      return r.json().then(function (j) {
+        if (r.status === 409 && j.code === 'no_files_access') { $('filesHint').classList.remove('hidden'); throw new Error('access'); }
+        if (!r.ok) { toast(j.error || 'The tablet could not do that'); throw new Error('failed'); }
+        $('filesHint').classList.add('hidden');
+        return j;
+      });
+    });
+  }
+  function loadRoots() {
+    filesCall('GET', '/api/files/roots').then(function (j) {
+      fs.loaded = true; fs.roots = j.roots || [];
+      if (!fs.roots.some(function (r) { return r.id === fs.root; })) { fs.root = fs.roots.length ? fs.roots[0].id : null; fs.path = ''; }
+      renderRoots(); if (fs.root) list();
+    }).catch(function () {});
+  }
+  function renderRoots() {
+    var box = $('roots'); box.innerHTML = '';
+    fs.roots.forEach(function (r) {
+      var b = document.createElement('button'); b.type = 'button';
+      b.setAttribute('aria-pressed', String(r.id === fs.root));
+      var n = document.createElement('span'); n.textContent = r.label; b.appendChild(n);
+      var l = document.createElement('span'); l.className = 'lbl'; l.textContent = T('{0} free', [size(r.free)]); b.appendChild(l);
+      b.addEventListener('click', function () { fs.root = r.id; fs.path = ''; renderRoots(); list(); });
+      box.appendChild(b);
+    });
+  }
+  function rootLabel() { var r = fs.roots.filter(function (x) { return x.id === fs.root; })[0]; return r ? r.label : ''; }
+  function join(a, b) { return a ? a + '/' + b : b; }
+  function renderCrumbs() {
+    var c = $('crumbs'); c.innerHTML = '';
+    var parts = fs.path ? fs.path.split('/') : [];
+    var acc = '';
+    var mk = function (label, path) {
+      var a = document.createElement('a'); a.href = '#'; a.textContent = label;
+      a.addEventListener('click', function (e) { e.preventDefault(); fs.path = path; list(); });
+      return a;
+    };
+    c.appendChild(mk(rootLabel(), ''));
+    parts.forEach(function (p) { acc = join(acc, p); c.appendChild(document.createTextNode(' \u203a ')); c.appendChild(mk(p, acc)); });
+    $('fUp').disabled = !fs.path;
+  }
+  function list() {
+    filesCall('GET', '/api/files/list', { root: fs.root, path: fs.path }).then(function (j) {
+      fs.path = j.path || '';
+      renderCrumbs();
+      var ul = $('flist'); ul.innerHTML = '';
+      $('fTrunc').classList.toggle('hidden', !j.truncated);
+      if (!j.entries.length) { var li0 = document.createElement('li'); li0.innerHTML = '<p class="meta" style="padding:12px 6px;margin:0"></p>'; li0.firstChild.textContent = T('This folder is empty.'); ul.appendChild(li0); }
+      j.entries.forEach(function (e) {
+        var li = document.createElement('li'), b = document.createElement('button'); b.type = 'button';
+        b.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true">' + (ICONS[e.kind] || ICONS.other) + '</svg>';
+        var t = document.createElement('span');
+        var n = document.createElement('span'); n.className = 'fn'; n.textContent = e.name;
+        var m = document.createElement('span'); m.className = 'fm';
+        m.textContent = (e.dir ? T('Folder') : size(e.size)) + ' \u00b7 ' + new Date(e.modified).toLocaleDateString(LANG);
+        t.appendChild(n); t.appendChild(m); b.appendChild(t);
+        b.addEventListener('click', function () { if (e.dir) { fs.path = join(fs.path, e.name); list(); } else openSheet(e); });
+        li.appendChild(b); ul.appendChild(li);
+      });
+    }).catch(function () {});
+  }
+  function openSheet(e) {
+    fs.sel = e;
+    $('fsName').textContent = e.name;
+    $('fsMeta').textContent = size(e.size) + ' \u00b7 ' + new Date(e.modified).toLocaleString(LANG);
+    $('fsPlay').classList.toggle('hidden', e.kind === 'other');
+    $('fSheet').classList.remove('hidden'); $('fsClose').focus();
+  }
+  function closeSheet() { $('fSheet').classList.add('hidden'); fs.sel = null; }
+  function selPath() { return join(fs.path, fs.sel.name); }
+  $('fsClose').addEventListener('click', closeSheet);
+  $('fSheet').addEventListener('click', function (e) { if (e.target === this) closeSheet(); });
+  $('fsPlay').addEventListener('click', function () {
+    var p = selPath(); closeSheet();
+    filesCall('POST', '/api/files/play', { root: fs.root, path: p }).then(function () { toast('Playing on the tablet'); }).catch(function () {});
+  });
+  $('fsSave').addEventListener('click', function () {
+    var p = selPath(); closeSheet();
+    filesCall('GET', '/api/files/token', { root: fs.root, path: p }).then(function (j) {
+      var a = document.createElement('a'); a.href = j.url; a.download = ''; document.body.appendChild(a); a.click(); a.remove();
+      toast('Downloading');
+    }).catch(function () {});
+  });
+  $('fsRename').addEventListener('click', function () {
+    var old = fs.sel.name, p = selPath(); closeSheet();
+    var n = prompt(T('New name for "{0}"', [old]), old);
+    if (!n || n === old) return;
+    filesCall('POST', '/api/files/rename', { root: fs.root, path: p, name: n }).then(function () { toast('Renamed'); list(); }).catch(function () {});
+  });
+  $('fsDelete').addEventListener('click', function () {
+    var name = fs.sel.name, p = selPath(); closeSheet();
+    if (!confirm(T('Move "{0}" to the trash?\n\nIt stays in the trash until you tap Empty trash.', [name]))) return;
+    filesCall('POST', '/api/files/delete', { root: fs.root, path: p }).then(function () { toast('Moved to the trash'); list(); }).catch(function () {});
+  });
+  $('fUp').addEventListener('click', function () { var i = fs.path.lastIndexOf('/'); fs.path = i >= 0 ? fs.path.slice(0, i) : ''; list(); });
+  $('fRefresh').addEventListener('click', loadRoots);
+  $('fMkdir').addEventListener('click', function () {
+    var n = prompt(T('Name of the new folder')); if (!n) return;
+    filesCall('POST', '/api/files/mkdir', { root: fs.root, path: fs.path, name: n }).then(function () { list(); }).catch(function () {});
+  });
+  $('fTrash').addEventListener('click', function () {
+    if (!confirm(T('Delete everything in the trash of "{0}" for good?\n\nThis cannot be undone.', [rootLabel()]))) return;
+    filesCall('POST', '/api/files/empty-trash', { root: fs.root }).then(function (j) { toast(T('Trash emptied ({0} items)', [j.removed])); loadRoots(); }).catch(function () {});
+  });
+  $('fUpload').addEventListener('click', function () { if (fs.root) $('fInput').click(); });
+  $('fInput').addEventListener('change', function () {
+    var files = Array.prototype.slice.call(this.files || []); this.value = '';
+    var root = fs.root, path = fs.path;
+    var next = function () {
+      var f = files.shift(); if (!f) { list(); loadRoots(); return; }
+      var row = document.createElement('div'); row.className = 'up';
+      var label = document.createElement('div'); label.textContent = T('Uploading {0} ({1})', [f.name, size(f.size)]);
+      var bar = document.createElement('progress'); bar.max = 100; bar.value = 0;
+      row.appendChild(label); row.appendChild(bar); $('ups').appendChild(row);
+      var x = new XMLHttpRequest();
+      x.open('POST', '/api/files/upload?' + new URLSearchParams({ root: root, path: path, name: f.name }).toString());
+      x.setRequestHeader('X-Pin', pin);
+      x.upload.onprogress = function (ev) { if (ev.lengthComputable) bar.value = Math.round(ev.loaded * 100 / ev.total); };
+      x.onload = function () {
+        var j = {}; try { j = JSON.parse(x.responseText); } catch (e) {}
+        if (x.status === 401) { showLogin('Wrong PIN - please try again.'); return; }
+        if (x.status === 409 && j.code === 'no_files_access') $('filesHint').classList.remove('hidden');
+        if (x.status === 200) { label.textContent = T('Uploaded {0}', [j.name || f.name]); bar.value = 100; setTimeout(function () { row.remove(); }, 4000); }
+        else label.textContent = T('Failed: {0} - {1}', [f.name, j.error ? TE(j.error) : T('error {0}', [x.status])]);
+        next();
+      };
+      x.onerror = function () { label.textContent = T('Failed: {0} - connection lost', [f.name]); next(); };
+      x.send(f);
+    };
+    next();
+  });
+
+  // ---- Music: Player Pure ----
+  var pp = { loaded: false, offset: 0, total: 0, q: '', view: 'albums', album: null, status: null, covers: {}, coverUrl: null, coverKey: null, seeking: false, queue: [] };
+  var ppCoverQueue = [], ppCoverBusy = 0;
+  function ppJson(method, path, params) {
+    return call(method, path, params).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, status: r.status, j: j }; }); });
+  }
+  function ppPost(path, params, okMsg) {
+    return ppJson('POST', path, params).then(function (r) {
+      if (!r.ok) toast(r.j.error || 'Player Pure could not do that'); else if (okMsg) toast(okMsg);
+      setTimeout(ppPoll, 300); return r;
+    }).catch(function () {});
+  }
+  function ppCover(key, holder) {
+    if (pp.covers[key] !== undefined) { if (pp.covers[key]) { holder.innerHTML = ''; var i = new Image(); i.alt = ''; i.src = pp.covers[key]; holder.appendChild(i); } return; }
+    ppCoverQueue.push([key, holder]); ppCoverPump();
+  }
+  function ppCoverPump() {
+    while (ppCoverBusy < 4 && ppCoverQueue.length) {
+      var job = ppCoverQueue.shift(), key = job[0], holder = job[1];
+      if (pp.covers[key] !== undefined) { ppCover(key, holder); continue; }
+      ppCoverBusy++;
+      (function (key, holder) {
+        call('GET', '/api/music/art', { key: key }).then(function (r) { return r.ok ? r.blob() : null; }).then(function (b) {
+          pp.covers[key] = b ? URL.createObjectURL(b) : null; if (b) ppCover(key, holder);
+        }).catch(function () { pp.covers[key] = null; }).then(function () { ppCoverBusy--; ppCoverPump(); });
+      })(key, holder);
+    }
+  }
+  function ppRender(s) {
+    pp.status = s;
+    var installed = s && s.installed !== false;
+    $('ppHint').classList.toggle('hidden', installed);
+    if (!installed) { ppDac(null); return; }
+    $('ppSong').textContent = s.title || T('Nothing playing');
+    $('ppMeta').textContent = [s.artist, s.album].filter(Boolean).join(' · ');
+    var sig = $('ppSignal');
+    sig.classList.toggle('hidden', !s.title);
+    sig.textContent = s.bitPerfect ? 'BIT-PERFECT' : (s.usb ? 'USB' : T('ANDROID AUDIO'));
+    sig.classList.toggle('bp', !!s.bitPerfect);
+    $('ppPath').textContent = s.title ? (s.outputLine ? s.outputLine + ' · ' + s.output : s.format) : (s.message || '');
+    $('ppPlayLbl').textContent = s.playing ? T('Pause') : T('Play');
+    $('ppPlayIcon').innerHTML = s.playing ? '<path d="M6 5h4v14H6zM14 5h4v14h-4z"/>' : '<path d="M7 5v14l11-7z"/>';
+    $('ppShuffle').setAttribute('aria-pressed', String(!!s.shuffle));
+    $('ppShuffle').style.borderWidth = s.shuffle ? '2px' : '';
+    $('ppRepeatLbl').textContent = T(['Repeat off', 'Repeat all', 'Repeat one'][s.repeat || 0]);
+    $('ppRepeat').style.borderWidth = s.repeat ? '2px' : '';
+    var d = s.durationMs || 0;
+    if (!pp.seeking) { $('ppSeek').value = d > 0 ? Math.round((s.positionMs || 0) * 1000 / d) : 0; $('ppPos').textContent = fmt(s.positionMs); }
+    $('ppDur').textContent = fmt(d);
+    var vk = s.volumeKind;
+    $('ppVolRow').classList.toggle('hidden', !(vk === 'dac' || vk === 'digital'));
+    $('ppNoVol').classList.toggle('hidden', !(vk === 'none' && s.usb));
+    $('ppVolLbl').textContent = vk === 'dac' ? T('DAC volume') : T('Digital volume');
+    if (document.activeElement !== $('ppVol')) $('ppVol').value = s.volume; $('ppVolNum').textContent = s.volume;
+    var key = s.title ? s.albumKey : null;
+    if (key !== pp.coverKey) {
+      pp.coverKey = key;
+      if (!key) $('ppArt').innerHTML = artPlaceholder; else ppCover(key, $('ppArt'));
+    }
+    if (pp.view === 'queue' && s.index !== pp.lastIndex) ppLoadQueue();
+    pp.lastIndex = s.index;
+    ppDac(s.dacDisplay);
+  }
+  function ppDac(d) {
+    $('ppDacCard').classList.toggle('hidden', !d);
+    if (!d) return;
+    $('ppDacName').textContent = d.connected ? d.input + ' \u00b7 ' + d.name : T('No USB DAC');
+    $('ppDacRate').textContent = TE(d.rate) || ''; $('ppDacUnit').textContent = d.unit || '';
+    $('ppDacFormat').textContent = TE(d.format) || '';
+    $('ppDacVolLbl').classList.toggle('hidden', !d.volume); $('ppDacVol').textContent = TE(d.volume) || ''; $('ppDacVol').classList.toggle('txt', d.volumeDb == null);
+    $('ppDacMuted').classList.toggle('hidden', !d.muted);
+    var b = $('ppDacBadge'); b.textContent = TE(d.badge) || ''; b.classList.toggle('hidden', !d.badge); b.classList.toggle('bp', !!d.bitPerfect);
+    $('ppDacState').textContent = TE(d.state) || '';
+    $('ppDacBtns').classList.toggle('hidden', !d.connected || !(d.hasVolume || d.hasMute));
+    $('ppDacDown').classList.toggle('hidden', !d.hasVolume); $('ppDacUp').classList.toggle('hidden', !d.hasVolume);
+    $('ppDacMute').classList.toggle('hidden', !d.hasMute);
+    $('ppDacMute').textContent = d.muted ? T('Unmute') : T('Mute'); $('ppDacMute').setAttribute('aria-pressed', String(!!d.muted));
+    $('ppDacScreen').setAttribute('aria-label', T('DAC display: {0}', [[d.name, TE(d.rate) + ' ' + (d.unit || ''), TE(d.format), d.volume ? T('volume {0}', [TE(d.volume)]) : '', d.muted ? T('muted') : '', TE(d.badge)].filter(Boolean).join(', ')]));
+  }
+  function ppPoll() { ppJson('GET', '/api/music/status').then(function (r) { ppRender(r.ok ? r.j : { installed: false }); }).catch(function () {}); }
+  function ppLoadAlbums(reset) {
+    if (reset) { pp.offset = 0; $('ppAlbums').innerHTML = ''; }
+    pp.loaded = true;
+    ppJson('GET', '/api/music/albums', { q: pp.q, offset: pp.offset, limit: 60 }).then(function (r) {
+      if (!r.ok) { if (r.status === 404) $('ppHint').classList.remove('hidden'); return; }
+      pp.total = r.j.total;
+      r.j.albums.forEach(function (a) {
+        var b = document.createElement('button'); b.type = 'button';
+        b.setAttribute('aria-label', T('{0} by {1}', [a.title, a.artist]));
+        var cv = document.createElement('div'); cv.className = 'cv';
+        var t = document.createElement('div'); t.className = 'at'; t.textContent = a.title || T('Unknown album');
+        var ar = document.createElement('div'); ar.className = 'aa'; ar.textContent = a.artist + (a.format ? ' · ' + a.format : '');
+        b.appendChild(cv); b.appendChild(t); b.appendChild(ar);
+        b.addEventListener('click', function () { ppOpenAlbum(a.key); });
+        $('ppAlbums').appendChild(b);
+        ppCover(a.key, cv);
+      });
+      pp.offset += r.j.albums.length;
+      $('ppMore').classList.toggle('hidden', pp.offset >= pp.total);
+      if (!pp.total) { $('ppAlbums').innerHTML = '<p class="meta"></p>'; $('ppAlbums').firstChild.textContent = pp.q ? T('Nothing matches.') : T('No music in Player Pure yet. Open Player Pure on the tablet and scan.'); }
+    }).catch(function () {});
+  }
+  function ppTrackRow(list, t, onTap, extraLabel, onExtra) {
+    var li = document.createElement('li'); if (t.current) li.className = 'cur';
+    var b = document.createElement('button'); b.type = 'button';
+    var no = document.createElement('span'); no.className = 'no'; no.textContent = t.current ? '▶' : String(t.i + 1);
+    var tt = document.createElement('span'); tt.className = 'tt'; tt.textContent = t.title + (t.artist && list === $('ppQueue') ? ' · ' + t.artist : '');
+    var td = document.createElement('span'); td.className = 'td'; td.textContent = fmt(t.durationMs);
+    b.appendChild(no); b.appendChild(tt); b.appendChild(td);
+    b.setAttribute('aria-label', (t.current ? T('Playing: {0}', [t.title]) : t.title) + ', ' + fmt(t.durationMs));
+    b.addEventListener('click', onTap);
+    li.appendChild(b);
+    var x = document.createElement('button'); x.type = 'button'; x.textContent = extraLabel; x.setAttribute('aria-label', extraLabel === '+' ? T('Add to queue: {0}', [t.title]) : T('Remove: {0}', [t.title]));
+    x.addEventListener('click', onExtra); li.appendChild(x);
+    list.appendChild(li);
+  }
+  function ppOpenAlbum(key) {
+    ppJson('GET', '/api/music/album', { key: key }).then(function (r) {
+      if (!r.ok) { toast(r.j.error || 'Album not found'); return; }
+      pp.album = r.j;
+      $('ppAlbums').classList.add('hidden'); $('ppMore').classList.add('hidden'); $('ppAlbum').classList.remove('hidden');
+      $('ppAlbumTitle').textContent = r.j.title || T('Unknown album');
+      var total = r.j.tracks.reduce(function (s, t) { return s + (t.durationMs || 0); }, 0);
+      $('ppAlbumMeta').textContent = [r.j.artist, r.j.year || '', T('{0} tracks', [r.j.tracks.length]), fmt(total), (r.j.tracks[0] || {}).format].filter(Boolean).join(' · ');
+      var ul = $('ppTracks'); ul.innerHTML = '';
+      r.j.tracks.forEach(function (t) {
+        ppTrackRow(ul, t, function () { ppPost('/api/music/play', { key: key, index: t.i }, T('Playing {0}', [t.title])); },
+          '+', function () { ppPost('/api/music/enqueue', { key: key, index: t.i, next: 0 }, 'Added to the queue'); });
+      });
+    }).catch(function () {});
+  }
+  function ppLoadQueue() {
+    ppJson('GET', '/api/music/queue').then(function (r) {
+      if (!r.ok) return;
+      var ul = $('ppQueue'); ul.innerHTML = '';
+      if (!r.j.length) { ul.innerHTML = '<li><p class="meta" style="padding:12px 8px"></p></li>'; ul.querySelector('p').textContent = T('The queue is empty.'); return; }
+      r.j.forEach(function (t) {
+        ppTrackRow(ul, t, function () { ppPost('/api/music/queue-jump', { index: t.i }); },
+          '×', function () { ppPost('/api/music/queue-remove', { index: t.i }).then(ppLoadQueue); });
+      });
+    }).catch(function () {});
+  }
+  function ppShow(view) {
+    pp.view = view;
+    $('ppViewAlbums').setAttribute('aria-pressed', String(view !== 'queue'));
+    $('ppViewQueue').setAttribute('aria-pressed', String(view === 'queue'));
+    $('ppQueueBox').classList.toggle('hidden', view !== 'queue');
+    $('ppAlbums').classList.toggle('hidden', view !== 'albums');
+    $('ppAlbum').classList.toggle('hidden', view !== 'album');
+    $('ppMore').classList.toggle('hidden', view !== 'albums' || pp.offset >= pp.total);
+    if (view === 'queue') ppLoadQueue();
+  }
+  $('ppViewAlbums').addEventListener('click', function () { ppShow('albums'); });
+  $('ppViewQueue').addEventListener('click', function () { ppShow('queue'); });
+  $('ppBack').addEventListener('click', function () { ppShow('albums'); });
+  $('ppMore').addEventListener('click', function () { ppLoadAlbums(false); });
+  var ppSearchTimer = null;
+  $('ppSearch').addEventListener('input', function () {
+    clearTimeout(ppSearchTimer);
+    ppSearchTimer = setTimeout(function () { pp.q = $('ppSearch').value.trim(); ppShow('albums'); ppLoadAlbums(true); }, 350);
+  });
+  $('ppAlbumPlay').addEventListener('click', function () { if (pp.album) ppPost('/api/music/play', { key: pp.album.key, index: 0 }, 'Playing'); });
+  $('ppAlbumShuffle').addEventListener('click', function () { if (pp.album) ppPost('/api/music/play', { key: pp.album.key, shuffle: 1 }, 'Shuffling'); });
+  $('ppAlbumNext').addEventListener('click', function () { if (pp.album) ppPost('/api/music/enqueue', { key: pp.album.key, next: 1 }, 'Plays next'); });
+  $('ppAlbumAdd').addEventListener('click', function () { if (pp.album) ppPost('/api/music/enqueue', { key: pp.album.key, next: 0 }, 'Added to the queue'); });
+  $('ppClear').addEventListener('click', function () { ppPost('/api/music/queue-clear', null, 'Queue cleared').then(ppLoadQueue); });
+  Array.prototype.forEach.call(document.querySelectorAll('[data-pp]'), function (b) {
+    b.addEventListener('click', function () { ppPost('/api/music/control', { action: b.getAttribute('data-pp') }); });
+  });
+  $('ppSeek').addEventListener('input', function () { pp.seeking = true; var d = (pp.status && pp.status.durationMs) || 0; $('ppPos').textContent = fmt(d * $('ppSeek').value / 1000); });
+  $('ppSeek').addEventListener('change', function () {
+    var d = (pp.status && pp.status.durationMs) || 0; pp.seeking = false;
+    ppPost('/api/music/control', { action: 'seek', ms: Math.round(d * $('ppSeek').value / 1000) });
+  });
+  $('ppVol').addEventListener('change', function () { ppPost('/api/music/volume', { value: $('ppVol').value }); });
+  $('ppDacDown').addEventListener('click', function () { ppPost('/api/music/volume-step', { db: -1 }); });
+  $('ppDacUp').addEventListener('click', function () { ppPost('/api/music/volume-step', { db: 1 }); });
+  $('ppDacMute').addEventListener('click', function () { var d = pp.status && pp.status.dacDisplay; ppPost('/api/music/mute', { on: d && d.muted ? 0 : 1 }); });
+  $('ppVol').addEventListener('input', function () { $('ppVolNum').textContent = $('ppVol').value; });
+  try { var savedTab = localStorage.getItem('mh_tab'); if (savedTab && savedTab !== 'main') showTab(savedTab); } catch (e) {}
+
+  // ---- touchpad and keyboard: one request at a time, pointer moves merged while one is on its way ----
+  var busy = false, mv = { dx: 0, dy: 0 }, sc = { dx: 0, dy: 0 }, actions = [];
+  function inputResult(r) {
+    if (!r) return;
+    if (r.status === 409 && r.j && r.j.code === 'no_service') { $('inputHint').classList.remove('hidden'); toast('Turn on Mouse & keyboard on the tablet'); }
+    else if (r.status === 409 && r.j && r.j.code === 'no_field') toast('Tap a text field on the tablet first');
+    else if (!r.ok) toast((r.j && r.j.error) || 'The tablet could not do that');
+  }
+  function sendInput(path, params) {
+    return call('POST', path, params).then(function (r) {
+      return r.json().then(function (j) { return { ok: r.ok, status: r.status, j: j }; }, function () { return { ok: r.ok, status: r.status, j: null }; });
+    }).catch(function () { return null; });
+  }
+  function pump() {
+    if (busy) return;
+    var req = null;
+    if (Math.abs(mv.dx) >= 1 || Math.abs(mv.dy) >= 1) {
+      req = ['/api/pointer', { action: 'move', dx: Math.round(mv.dx), dy: Math.round(mv.dy) }]; mv.dx = mv.dy = 0;
+    } else if (Math.abs(sc.dx) + Math.abs(sc.dy) >= 12) {
+      req = ['/api/pointer', { action: 'scroll', dx: Math.round(sc.dx * 3), dy: Math.round(sc.dy * 3) }]; sc.dx = sc.dy = 0;
+    } else if (actions.length) {
+      req = actions.shift();
+    }
+    if (!req) return;
+    busy = true;
+    sendInput(req[0], req[1]).then(function (r) { inputResult(r); busy = false; pump(); });
+  }
+  function queueInput(path, params) {
+    if (path === '/api/keyboard' && params.action === 'set') {
+      actions = actions.filter(function (a) { return !(a[0] === '/api/keyboard' && a[1].action === 'set'); });
+    }
+    actions.push([path, params]); pump();
+  }
+
+  var pad = $('pad'), pts = {}, count = 0, startT = 0, travel = 0, multi = false, holdTimer = null, held = false, lastT = 0;
+  function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
+  pad.addEventListener('pointerdown', function (e) {
+    e.preventDefault();
+    try { pad.setPointerCapture(e.pointerId); } catch (x) {}
+    pts[e.pointerId] = { x: e.clientX, y: e.clientY }; count = Object.keys(pts).length;
+    pad.classList.add('active');
+    if (count === 1) {
+      startT = performance.now(); travel = 0; multi = false; held = false; lastT = e.timeStamp;
+      clearTimeout(holdTimer);
+      holdTimer = setTimeout(function () { if (count === 1 && travel < 10 && !multi) { held = true; queueInput('/api/pointer', { action: 'longpress' }); } }, 600);
+    } else { multi = true; clearTimeout(holdTimer); }
+  });
+  pad.addEventListener('pointermove', function (e) {
+    var p = pts[e.pointerId]; if (!p) return;
+    e.preventDefault();
+    var dx = e.clientX - p.x, dy = e.clientY - p.y; p.x = e.clientX; p.y = e.clientY;
+    if (count >= 2) { sc.dx += dx / count; sc.dy += dy / count; pump(); return; }
+    travel += Math.abs(dx) + Math.abs(dy);
+    var dt = Math.max(1, e.timeStamp - lastT); lastT = e.timeStamp;
+    var f = clamp(1.8 + (Math.sqrt(dx * dx + dy * dy) / dt) * 3, 1.8, 9);   // faster finger = pointer travels further
+    mv.dx += dx * f; mv.dy += dy * f; pump();
+  });
+  function padUp(e) {
+    if (!pts[e.pointerId]) return;
+    delete pts[e.pointerId]; count = Object.keys(pts).length;
+    if (count === 0) {
+      clearTimeout(holdTimer); pad.classList.remove('active');
+      if (!multi && !held && travel < 10 && performance.now() - startT < 350 && e.type === 'pointerup') queueInput('/api/pointer', { action: 'tap' });
+    }
+  }
+  pad.addEventListener('pointerup', padUp);
+  pad.addEventListener('pointercancel', padUp);
+  pad.addEventListener('wheel', function (e) { e.preventDefault(); sc.dx -= e.deltaX / 3; sc.dy -= e.deltaY / 3; pump(); }, { passive: false });
+
+  var kbTimer = null;
+  function chars(s) { return Array.from(s); }
+  function kbSend() { clearTimeout(kbTimer); kbTimer = null; queueInput('/api/keyboard', { action: 'set', text: $('kb').value }); }
+  $('kb').addEventListener('input', function () { clearTimeout(kbTimer); kbTimer = setTimeout(kbSend, 150); });
+  $('kb').addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); kbEnter(); } });
+  function kbEnter() {
+    if (kbTimer) kbSend();
+    queueInput('/api/keyboard', { action: 'enter' });
+    $('kb').value = '';
+  }
+  $('kbEnter').addEventListener('click', kbEnter);
+  $('kbDel').addEventListener('click', function () {
+    var v = $('kb').value;
+    if (v) { $('kb').value = chars(v).slice(0, -1).join(''); kbSend(); }
+    else queueInput('/api/keyboard', { action: 'backspace' });
+  });
+  $('kbClear').addEventListener('click', function () { clearTimeout(kbTimer); kbTimer = null; $('kb').value = ''; queueInput('/api/keyboard', { action: 'clear' }); });
+  $('seek').addEventListener('input', function () { dragging = true; $('pos').textContent = fmt(+this.value); });
+  $('seek').addEventListener('change', function () { dragging = false; post('/api/control', { action: 'seek', ms: this.value }); });
+  $('vol').addEventListener('change', function () { post('/api/volume', { level: this.value }); });
+  var qrUrl = null;
+  function closeQr() { $('qrOverlay').classList.add('hidden'); $('qrBox').innerHTML = ''; if (qrUrl) { URL.revokeObjectURL(qrUrl); qrUrl = null; } $('qrBtn').focus(); }
+  $('qrBtn').addEventListener('click', function () {
+    call('GET', '/api/qr').then(function (r) {
+      if (!r.ok) { return r.json().then(function (j) { toast(j.error || 'No QR code available'); }); }
+      return r.blob().then(function (b) {
+        qrUrl = URL.createObjectURL(b);
+        var img = new Image(); img.alt = T('QR code for this remote'); img.src = qrUrl;
+        $('qrBox').innerHTML = ''; $('qrBox').appendChild(img);
+        $('qrOverlay').classList.remove('hidden'); $('qrClose').focus();
+      });
+    }).catch(function () {});
+  });
+  $('qrClose').addEventListener('click', closeQr);
+  $('qrOverlay').addEventListener('click', function (e) { if (e.target === this) closeQr(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !$('qrOverlay').classList.contains('hidden')) closeQr(); });
+  $('loginBtn').addEventListener('click', login);
+  $('pin').addEventListener('keydown', function (e) { if (e.key === 'Enter') login(); });
+  $('logout').addEventListener('click', function (e) { e.preventDefault(); try { localStorage.removeItem('mh_pin'); } catch (x) {} pin = ''; showLogin(''); });
+
+  if (pin) { call('GET', '/api/ping').then(function (r) { if (r.ok) showApp(); }).catch(function () {}); } else { showLogin(''); }
+})();
+</script>
+</body>
+</html>

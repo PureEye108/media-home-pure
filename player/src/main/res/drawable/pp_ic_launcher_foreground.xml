@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Player Pure mark: a ring with a play triangle and a clean sine through it (original design). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp" android:height="108dp" android:viewportWidth="108" android:viewportHeight="108">
+    <path android:fillColor="#00000000" android:strokeColor="#FFE9D7B0" android:strokeWidth="3.5"
+        android:pathData="M54,30a24,24 0,1 1,-0.01 0z" />
+    <path android:fillColor="#FFE9D7B0" android:pathData="M47,42L67,54L47,66Z" />
+    <path android:fillColor="#00000000" android:strokeColor="#FFF5F6F8" android:strokeWidth="2.2" android:strokeLineCap="round"
+        android:pathData="M28,54C33,46 38,46 43,54S53,62 58,54S68,46 73,54S78,60 80,54" />
+</vector>
